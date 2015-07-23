@@ -151,7 +151,7 @@ class Client implements ClientInterface {
         // sign the message
         $this->sign($message, $nonce);
 
-        // send a POST request
+        // send a POST request (it's always a POST)
         $response = $this->getHttpClient()->post($url, [
             'body' => $this->getSerializer()->serialize($message),
         ]);
