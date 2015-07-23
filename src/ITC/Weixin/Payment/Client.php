@@ -5,6 +5,7 @@ use GuzzleHttp\ClientInterface as HttpClientInterface;
 use GuzzleHttp\Client as HttpClient;
 
 use ITC\Weixin\Payment\Contracts\Client as ClientInterface;
+use ITC\Weixin\Payment\Contracts\Cache as CacheInterface;
 use ITC\Weixin\Payment\Contracts\HashGenerator as HashGeneratorInterface;
 use ITC\Weixin\Payment\Contracts\Serializer as SerializerInterface;
 use ITC\Weixin\Payment\Util\UUID;
@@ -15,11 +16,8 @@ class Client implements ClientInterface {
     private $app_id;
     private $mch_id;
     private $secret;
-
-    private $paths = [
-        'public_key' => null,
-        'private_key' => null,
-    ];
+    private $public_key_path;
+    private $private_key_path;
 
     private $http;
     private $hashgen;
@@ -34,7 +32,10 @@ class Client implements ClientInterface {
         $this->app_id = $config['app_id'];
         $this->mch_id = $config['mch_id'];
         $this->secret = $config['secret'];
-        $this->paths = $config['paths'];
+        $this->public_key_path = $config['public_key_path'];
+        $this->private_key_path = $config['private_key_path'];
+
+        !empty($config['secure']) && $this->secure();
     }
 
     /**
@@ -126,6 +127,16 @@ class Client implements ClientInterface {
     }
 
     /**
+     * @param void
+     * 
+     */
+    public function secure($secure=true)
+    {
+        $this->secure = $secure;
+        return $this;
+    }
+
+    /**
      * @param string $url
      * @param array $data
      * @param array $options
@@ -134,17 +145,15 @@ class Client implements ClientInterface {
      */
     public function call($url, array $data, array $options=[], HttpResponse &$response=null)
     {
-        $data['appid'] = $this->app_id;
-        $data['mch_id'] = $this->mch_id;
-        $data['nonce_str'] = UUID::v4();
-        $data['sign'] = $this->hashgen->hash($data);
+        // generate a UUID if an nonce isn't supplied via options
+        $nonce = !empty($options['nonce']) ? $options['nonce'] : UUID::v4();
 
-        $response = $this->http->post($url, [
-            'body' => $this->serializer->serialize($data),
-            'headers' => [
-                'Content-Type' => 'text/xml',
-                'Accept' => 'text/xml',
-            ],
+        // sign the message
+        $this->sign($data, $nonce);
+
+        // send a POST request
+        $response = $this->getHttpClient()->post($url, [
+            'body' => $this->getSerializer()->serialize($data),
         ]);
 
         $status = (int) $response->getStatusCode();
@@ -154,7 +163,21 @@ class Client implements ClientInterface {
             throw new UnexpectedValueException('got unexpected HTTP status '.$status);
         }
 
-        return $this->serializer->unserialize($response->getBody());
+        // return the parsed response body
+        return $this->getSerializer()->unserialize($response->getBody());
+    }
+
+    /**
+     * @param array $data
+     * @param string $nonce
+     * @return void
+     */
+    private function sign(array &$data, $nonce)
+    {
+        $data['appid'] = $this->app_id;
+        $data['mch_id'] = $this->mch_id;
+        $data['nonce_str'] = $nonce;
+        $data['sign'] = $this->getHashGenerator()->hash($data);
     }
 
 }

@@ -18,6 +18,12 @@ interface Client {
     public function setCache(Cache $cache);
 
     /**
+     * @param bool $secure
+     * @return ITC\Weixin\Payment\Contracts\Client
+     */
+    public function secure($secure=true);
+
+    /**
      * @param string $url
      * @param array $data
      * @param array $headers
