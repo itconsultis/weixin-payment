@@ -106,28 +106,6 @@ class Client implements ClientInterface {
 
     /**
      * @param void
-     * @return ITC\Weixin\Contracts\Cache
-     */
-    public function getCache()
-    {
-        if (!$this->cache)
-        {
-            $this->setCache(new FileCache('/tmp/weixin-payment-client-cache'));
-        }
-        return $this->cache;
-    }
-
-    /**
-     * @param ITC\Weixin\Contracts\Cache
-     * @return void
-     */
-    public function setCache(CacheInterface $cache)
-    {
-        $this->cache = $cache;
-    }
-
-    /**
-     * @param void
      * 
      */
     public function secure($secure=true)

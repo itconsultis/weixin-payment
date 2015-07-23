@@ -3,7 +3,6 @@
 use Mockery;
 use GuzzleHttp\ClientInterface as HttpClientInterface;
 use ITC\Weixin\Payment\Contracts\Serializer as SerializerInterface;
-use ITC\Weixin\Payment\Contracts\Cache as CacheInterface;
 use ITC\Weixin\Payment\Contracts\HashGenerator as HashGeneratorInterface;
 use ITC\Weixin\Payment\Contracts\Client as ClientInterface;
 use ITC\Weixin\Payment\Client;
@@ -16,7 +15,6 @@ class ClientTest extends TestCase {
 
         // mock all the dependencies
         $this->serializer = Mockery::mock(SerializerInterface::class)->makePartial();
-        $this->cache = Mockery::mock(CacheInterface::class)->makePartial();
         $this->hashgen = Mockery::mock(HashGeneratorInterface::class)->makePartial();
         $this->http = Mockery::mock(HttpClientInterface::class)->makePartial();
 
@@ -35,7 +33,6 @@ class ClientTest extends TestCase {
         $this->client->setHttpClient($this->http);
         $this->client->setSerializer($this->serializer);
         $this->client->setHashGenerator($this->hashgen);
-        $this->client->setCache($this->cache);
     }
 
     public function test_interface_compliance()
