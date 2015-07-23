@@ -1,4 +1,4 @@
-<?php namespace ITC\Weixin;
+<?php namespace ITC\Weixin\Contracts;
 
 interface Serializer {
 

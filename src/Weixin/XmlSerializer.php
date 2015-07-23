@@ -2,7 +2,7 @@
 
 use ITC\Weixin\Contracts\Serializer as SerializerInterface;
 
-class XMLSerializer implements SerializerInterface {
+class XmlSerializer implements SerializerInterface {
 
     /**
      * @param array $data
@@ -27,12 +27,12 @@ class XMLSerializer implements SerializerInterface {
     }
 
     /**
-     * @param string $serialized
+     * @param string $xml
      * @return array
      */
     public function unserialize($xml)
     {
-        $xmldoc = simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)
-        return json_decode(json_encode($xmldoc, true));
+        $xmldoc = simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA);
+        return json_decode(json_encode($xmldoc), 1);
     }
 }
