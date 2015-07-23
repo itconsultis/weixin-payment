@@ -12,20 +12,21 @@ use GuzzleHttp\Client as HttpClient;
 
 class Client implements ClientInterface {
 
-    protected $credentials = [
+    private $credentials = [
         'app_id' => null,
         'app_secret' => null,
         'mch_id' => null,
     ];
 
-    protected $paths = [
+    private $paths = [
         'public_key' => null,
         'private_key' => null,
     ];
 
-    protected $http;
-    protected $hashgen;
-    protected $serializer;
+    private $http;
+    private $hashgen;
+    private $serializer;
+    private $cache;
 
     /**
      * @param array $config
@@ -72,8 +73,8 @@ class Client implements ClientInterface {
     }
 
     /**
-     *
-     *
+     * @param ITC\Weixin\Contracts\HashGenerator $hashgen
+     * @return void
      */
     public function setHashGenerator(HashGeneratorInterface $hashgen)
     {
@@ -103,6 +104,28 @@ class Client implements ClientInterface {
     }
 
     /**
+     * @param void
+     * @return ITC\Weixin\Contracts\Cache
+     */
+    public function getCache()
+    {
+        if (!$this->cache)
+        {
+            $this->setCache(new FileCache('/tmp/weixin-payment-client-cache'));
+        }
+        return $this->cache;
+    }
+
+    /**
+     * @param ITC\Weixin\Contracts\Cache
+     * @return void
+     */
+    public function setCache(CacheInterface $cache)
+    {
+        $this->cache = $cache;
+    }
+
+    /**
      * @param string $url
      * @param array $data
      * @param array $options
@@ -127,7 +150,7 @@ class Client implements ClientInterface {
 
         $status = (int) $response->getStatusCode();
 
-        if ($status >= 200 && $status < 300)
+        if ($status < 200 || $status >= 300)
         {
             throw new UnexpectedValueException('got unexpected HTTP status '.$status);
         }

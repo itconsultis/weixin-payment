@@ -14,6 +14,9 @@ interface Client {
     public function getSerializer();
     public function setSerializer(Serializer $serializer);
 
+    public function getCache();
+    public function setCache(Cache $cache);
+
     /**
      * @param string $url
      * @param array $data
