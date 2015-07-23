@@ -138,22 +138,22 @@ class Client implements ClientInterface {
 
     /**
      * @param string $url
-     * @param array $data
+     * @param array $message
      * @param array $options
      * @param Psr\Http\Message\ResponseInterface $response
      * @return array
      */
-    public function call($url, array $data, array $options=[], HttpResponse &$response=null)
+    public function call($url, array $message, array $options=[], HttpResponse &$response=null)
     {
         // generate a UUID if an nonce isn't supplied via options
         $nonce = !empty($options['nonce']) ? $options['nonce'] : UUID::v4();
 
         // sign the message
-        $this->sign($data, $nonce);
+        $this->sign($message, $nonce);
 
         // send a POST request
         $response = $this->getHttpClient()->post($url, [
-            'body' => $this->getSerializer()->serialize($data),
+            'body' => $this->getSerializer()->serialize($message),
         ]);
 
         $status = (int) $response->getStatusCode();
@@ -168,16 +168,16 @@ class Client implements ClientInterface {
     }
 
     /**
-     * @param array $data
+     * @param array $message
      * @param string $nonce
      * @return void
      */
-    private function sign(array &$data, $nonce)
+    private function sign(array &$message, $nonce)
     {
-        $data['appid'] = $this->app_id;
-        $data['mch_id'] = $this->mch_id;
-        $data['nonce_str'] = $nonce;
-        $data['sign'] = $this->getHashGenerator()->hash($data);
+        $message['appid'] = $this->app_id;
+        $message['mch_id'] = $this->mch_id;
+        $message['nonce_str'] = $nonce;
+        $message['sign'] = $this->getHashGenerator()->hash($message);
     }
 
 }

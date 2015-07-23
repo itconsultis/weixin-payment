@@ -25,11 +25,11 @@ interface Client {
 
     /**
      * @param string $url
-     * @param array $data
+     * @param array $message
      * @param array $headers
      * @param array $options
      * @return array
      */
-    public function call($url, array $data, array $options=[], HttpResponse &$response=null);
+    public function call($url, array $message, array $options=[], HttpResponse &$response=null);
 
 }
