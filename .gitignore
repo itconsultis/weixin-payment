@@ -1,5 +1,5 @@
 vendor
 composer.lock
-
+tests/coverage
 *.swp
 *.swo

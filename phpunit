@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 
 composer dump
-./vendor/phpunit/phpunit/phpunit $*
+./vendor/phpunit/phpunit/phpunit --coverage-html tests/coverage $*
+

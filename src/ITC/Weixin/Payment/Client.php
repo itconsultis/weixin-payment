@@ -44,10 +44,13 @@ class Client implements ClientInterface {
      */
     public function getHttpClient()
     {
+        // @codeCoverageIgnoreStart
         if (!$this->http)
         {
             $this->setHttpClient(new HttpClient());
         }
+        // @codeCoverageIgnoreEnd
+
         return $this->http;
     }
 
@@ -66,10 +69,13 @@ class Client implements ClientInterface {
      */
     public function getHashGenerator()
     {
+        // @codeCoverageIgnoreStart
         if (!$this->hashgen)
         {
             $this->setHashGenerator(new HashGenerator($this->secret));
         }
+        // @codeCoverageIgnoreEnd
+
         return $this->hashgen;
     }
 
@@ -88,10 +94,13 @@ class Client implements ClientInterface {
      */
     public function getSerializer()
     {
+        // @codeCoverageIgnoreStart
         if (!$this->serializer)
         {
             $this->setSerializer(new XmlSerializer());
         }
+        // @codeCoverageIgnoreEnd
+
         return $this->serializer;
     }
 
@@ -106,7 +115,7 @@ class Client implements ClientInterface {
 
     /**
      * @param void
-     * 
+       @codeCoverageIgnore
      */
     public function secure($secure=true)
     {
