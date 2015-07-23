@@ -8,6 +8,16 @@
             "email": "rich@it-consultis.com"
         }
     ],
+    "autoload": {
+        "psr-4": {
+            "ITC\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "classmap": [
+            "./tests/TestCase.php"
+        ]
+    },
     "require": {
         "overtrue/wechat": "^2.0",
         "guzzlehttp/guzzle": "^6.0"
@@ -17,3 +27,5 @@
         "mockery/mockery": "^0.9.4"
     }
 }
+
+
