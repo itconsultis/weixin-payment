@@ -15,4 +15,7 @@ interface Client {
 
     public function getHashGenerator();
     public function setHashGenerator(HashGenerator $hashgen);
+
+    public function getSerializer();
+    public function setSerializer(Serializer $serializer);
 }

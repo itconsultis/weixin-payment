@@ -1,16 +1,21 @@
-<?php namespace ITC\Weixin\Util;
+<?php namespace ITC\Weixin;
 
 use ITC\Weixin\Contracts\HashGenerator as HashGeneratorInterface;
 
+/**
+ * WeChat request signature generator
+ */
 class HashGenerator implements HashGeneratorInterface {
 
     /**
+     * The hash secret
      * @var string
      */
     private $secret;
 
     /**
      * @param string $hash_secret
+     * @param array $options
      */
     public function __construct($hash_secret, array $options=[])
     {
@@ -31,19 +36,12 @@ class HashGenerator implements HashGeneratorInterface {
 
         foreach ($data as $key => $value)
         {
-            if (!empty($this->options['url_encode']))
-            {
-                $pairs[] = urlencode($key) . '=' . urlencode($value);
-            }
-            else
-            {
-                $pairs[] = $key . '=' . $value;
-            }
+            $pairs[] = $key . '=' . $value;
         }
 
         $pairs[] = 'key=' . $this->secret;
         $query_string = implode('&', $pairs);
 
-        return md5($query_string);
+        return strtoupper(md5($query_string));
     }
 }
