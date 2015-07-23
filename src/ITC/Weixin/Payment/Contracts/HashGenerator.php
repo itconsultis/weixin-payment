@@ -1,4 +1,4 @@
-<?php namespace ITC\Weixin\Contracts;
+<?php namespace ITC\Weixin\Payment\Contracts;
 
 interface HashGenerator {
 

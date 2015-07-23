@@ -1,7 +1,7 @@
-<?php namespace ITC\Weixin\Test;
+<?php namespace ITC\Weixin\Payment\Test;
 
-use ITC\Weixin\Contracts\Serializer as SerializerInterface;
-use ITC\Weixin\XmlSerializer;
+use ITC\Weixin\Payment\Contracts\Serializer as SerializerInterface;
+use ITC\Weixin\Payment\XmlSerializer;
 
 class XmlSerializerTest extends TestCase {
 
@@ -49,8 +49,6 @@ class XmlSerializerTest extends TestCase {
         ];
 
         $this->assertEquals($expected, $this->serializer->unserialize($xml));
-        
     }
-
 
 }

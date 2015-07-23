@@ -1,7 +1,7 @@
-<?php namespace ITC\Weixin\Test;
+<?php namespace ITC\Weixin\Payment\Test;
 
-use ITC\Weixin\Contracts\HashGenerator as HashGeneratorInterface;
-use ITC\Weixin\HashGenerator;
+use ITC\Weixin\Payment\Contracts\HashGenerator as HashGeneratorInterface;
+use ITC\Weixin\Payment\HashGenerator;
 
 class HashGeneratorTest extends TestCase {
 

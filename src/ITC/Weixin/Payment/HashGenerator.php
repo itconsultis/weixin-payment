@@ -1,6 +1,6 @@
-<?php namespace ITC\Weixin;
+<?php namespace ITC\Weixin\Payment;
 
-use ITC\Weixin\Contracts\HashGenerator as HashGeneratorInterface;
+use ITC\Weixin\Payment\Contracts\HashGenerator as HashGeneratorInterface;
 
 /**
  * WeChat request signature generator

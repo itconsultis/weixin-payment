@@ -1,9 +1,8 @@
-<?php namespace ITC\Weixin\Test;
+<?php namespace ITC\Weixin\Payment\Test;
 
 use Mockery;
-use PHPUnit_Framework_TestCase as BaseTestCase;
 
-class TestCase extends BaseTestCase {
+class TestCase extends \PHPUnit_Framework_TestCase {
 
     public function setUp()
     {

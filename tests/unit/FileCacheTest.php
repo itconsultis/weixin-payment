@@ -1,33 +1,24 @@
-<?php namespace ITC\Weixin\Test;
+<?php namespace ITC\Weixin\Payment\Test;
 
-use ITC\Weixin\Contracts\Cache as CacheInterface;
-use ITC\Weixin\FileCache;
+use ITC\Weixin\Payment\Contracts\Cache as CacheInterface;
+use ITC\Weixin\Payment\Cache\FileCache;
 
 class FileCacheTest extends TestCase {
 
     public function setUp()
     {
         parent::setUp();
+
+        $this->deleteTestFile();
         $this->cache = new FileCache($this->getTestFilePath());
     }
 
     public function tearDown()
     {
         $this->deleteTestFile();
+
         parent::tearDown();
     }
-
-    private function getTestFilePath()
-    {
-        return __DIR__.'/FileCacheTest-delete-me';
-    }
-
-    private function deleteTestFile()
-    {
-        $path = $this->getTestFilePath();
-        file_exists($path) && unlink($path);
-    }
-
 
     public function test_interface_compliance()
     {
@@ -53,5 +44,16 @@ class FileCacheTest extends TestCase {
         $cache->del('b');
 
         $this->assertNull($cache->get('b'));
+    }
+
+    private function getTestFilePath()
+    {
+        return __DIR__.'/FileCacheTest-delete-me';
+    }
+
+    private function deleteTestFile()
+    {
+        $path = $this->getTestFilePath();
+        file_exists($path) && unlink($path);
     }
 }

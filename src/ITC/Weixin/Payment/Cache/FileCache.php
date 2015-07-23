@@ -1,7 +1,7 @@
-<?php namespace ITC\Weixin;
+<?php namespace ITC\Weixin\Payment\Cache;
 
 use RuntimeException;
-use ITC\Weixin\Contracts\Cache as CacheInterface;
+use ITC\Weixin\Payment\Contracts\Cache as CacheInterface;
 
 class FileCache implements CacheInterface {
 
@@ -10,7 +10,7 @@ class FileCache implements CacheInterface {
      */
     public function __construct($path)
     {
-        $this->ensureFilePath($path);
+        $this->preparePath($path);
         $this->path = $path;
     }
 
@@ -25,9 +25,7 @@ class FileCache implements CacheInterface {
 
         if ($entry)
         {
-            $expiry = $entry['expiry'];
-
-            if ($expiry && $expiry <= time())
+            if ($entry['expiry'] && $entry['expiry'] <= time())
             {
                 unset($data[$key]);
                 $this->write($data);
@@ -90,12 +88,11 @@ class FileCache implements CacheInterface {
     }
 
     /**
-     * Raise a RuntimeException if the given path is not writable
      * @param string $path
      * @return void
      * @throws RuntimeException
      */
-    private function ensureFilePath($path)
+    private function preparePath($path)
     {
         if (!file_exists($path) && !touch($path))
         {
@@ -106,6 +103,5 @@ class FileCache implements CacheInterface {
             throw new RuntimeException('file is not writable: '.$path);
         }
     }
-
 
 }

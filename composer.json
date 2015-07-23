@@ -10,7 +10,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "ITC\\": "src/"
+            "ITC\\": "src/ITC"
         }
     },
     "autoload-dev": {

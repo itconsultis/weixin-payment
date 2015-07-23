@@ -1,16 +1,16 @@
-<?php namespace ITC\Weixin;
-
-use ITC\Weixin\Contracts\PaymentClient as PaymentClientInterface;
-use ITC\Weixin\Contracts\HashGenerator as HashGeneratorInterface;
-use ITC\Weixin\Contracts\Serializer as SerializerInterface;
-use ITC\Weixin\Util\UUID;
+<?php namespace ITC\Weixin\Payment;
 
 use Psr\Http\Message\ResponseInterface as HttpResponse;
 use GuzzleHttp\ClientInterface as HttpClientInterface;
 use GuzzleHttp\Client as HttpClient;
 
+use ITC\Weixin\Payment\Contracts\Client as ClientInterface;
+use ITC\Weixin\Payment\Contracts\HashGenerator as HashGeneratorInterface;
+use ITC\Weixin\Payment\Contracts\Serializer as SerializerInterface;
+use ITC\Weixin\Payment\Util\UUID;
+use ITC\Weixin\Payment\Cache\FileCache;
 
-class Client implements PaymentClientInterface {
+class Client implements ClientInterface {
 
     private $app_id;
     private $mch_id;

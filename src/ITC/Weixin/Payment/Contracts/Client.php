@@ -1,9 +1,9 @@
-<?php namespace ITC\Weixin\Contracts;
+<?php namespace ITC\Weixin\Payment\Contracts;
 
 use GuzzleHttp\ClientInterface as HttpClient;
 use Psr\Http\Message\ResponseInterface as HttpResponse;
 
-interface PaymentClient {
+interface Client {
 
     public function getHttpClient();
     public function setHttpClient(HttpClient $client);

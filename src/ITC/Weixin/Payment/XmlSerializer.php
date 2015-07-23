@@ -1,6 +1,6 @@
-<?php namespace ITC\Weixin;
+<?php namespace ITC\Weixin\Payment;
 
-use ITC\Weixin\Contracts\Serializer as SerializerInterface;
+use ITC\Weixin\Payment\Contracts\Serializer as SerializerInterface;
 
 class XmlSerializer implements SerializerInterface {
 
