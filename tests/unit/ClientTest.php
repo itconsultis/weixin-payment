@@ -3,6 +3,7 @@
 use Mockery;
 use GuzzleHttp\ClientInterface as HttpClientInterface;
 use ITC\Weixin\Payment\Contracts\Serializer as SerializerInterface;
+use ITC\Weixin\Payment\Contracts\Command as CommandInterface;
 use ITC\Weixin\Payment\Contracts\HashGenerator as HashGeneratorInterface;
 use ITC\Weixin\Payment\Contracts\Client as ClientInterface;
 use ITC\Weixin\Payment\Client;
@@ -38,6 +39,18 @@ class ClientTest extends TestCase {
     public function test_interface_compliance()
     {
         $this->assertTrue($this->client instanceof ClientInterface);
+    }
+
+    public function test_command_access()
+    {
+        $client = $this->client;
+
+        $command = Mockery::mock(CommandInterface::class)->makePartial();
+        $command->shouldReceive('setClient')->once()->withArgs([$client]);
+
+        $client->register('arbitrary-command', $command);
+
+        $this->assertSame($command, $client->command('arbitrary-command'));
     }
 
     public function test_call()

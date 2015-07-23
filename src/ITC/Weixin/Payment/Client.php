@@ -1,15 +1,15 @@
 <?php namespace ITC\Weixin\Payment;
 
+use RuntimeException;
 use Psr\Http\Message\ResponseInterface as HttpResponse;
 use GuzzleHttp\ClientInterface as HttpClientInterface;
 use GuzzleHttp\Client as HttpClient;
 
 use ITC\Weixin\Payment\Contracts\Client as ClientInterface;
-use ITC\Weixin\Payment\Contracts\Cache as CacheInterface;
 use ITC\Weixin\Payment\Contracts\HashGenerator as HashGeneratorInterface;
 use ITC\Weixin\Payment\Contracts\Serializer as SerializerInterface;
+use ITC\Weixin\Payment\Contracts\Command as CommandInterface;
 use ITC\Weixin\Payment\Util\UUID;
-use ITC\Weixin\Payment\Cache\FileCache;
 
 
 class Client implements ClientInterface {
@@ -24,6 +24,8 @@ class Client implements ClientInterface {
     private $hashgen;
     private $serializer;
     private $cache;
+
+    private $commands = [];
 
     /**
      * @param array $config
@@ -153,6 +155,27 @@ class Client implements ClientInterface {
 
         // return the parsed response body
         return $this->getSerializer()->unserialize($response->getBody());
+    }
+
+    public function command($handle)
+    {
+        if (!isset($this->commands[$handle]))
+        {
+            throw new RuntimeException('unknown command: '.$handle);
+        }
+
+        return $this->commands[$handle];
+    }
+
+    /**
+     * @param string $handle
+     * @param 
+     */
+    public function register($handle, CommandInterface $command)
+    {
+        $command->setClient($this);
+
+        $this->commands[$handle] = $command;
     }
 
     /**

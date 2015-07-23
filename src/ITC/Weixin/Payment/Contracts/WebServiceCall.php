@@ -1,7 +1,6 @@
 <?php namespace ITC\Weixin\Payment\Contracts;
 
-
-interface WebServiceCall {
+interface Command {
 
     /**
      * @param string ITC\Weixin\Payment\Contracts\Client $client

@@ -1,9 +1,10 @@
 <?php namespace ITC\Weixin\Payment\Test;
 
 use Mockery;
+use ITC\Weixin\Payment\Contracts\Command as CommandInterface;
 use ITC\Weixin\Payment\Contracts\Client as ClientInterface;
 use ITC\Weixin\Payment\Contracts\WebServiceCall as CallInterface;
-use ITC\Weixin\Payment\Api\CreateUnifiedOrder;
+use ITC\Weixin\Payment\Command\CreateUnifiedOrder;
 
 class CreateUnifiedOrderTest extends TestCase {
 
@@ -12,21 +13,21 @@ class CreateUnifiedOrderTest extends TestCase {
         parent::setUp();
 
         $this->client = Mockery::mock(ClientInterface::class)->makePartial();
-        $this->call = new CreateUnifiedOrder($this->client);
+        $this->command = new CreateUnifiedOrder($this->client);
     }
 
     public function test_interface_compliance()
     {
-        $this->assertTrue($this->call instanceof CallInterface);
+        $this->assertTrue($this->command instanceof CommandInterface);
     }
 
     public function test_execute()
     {
         $client = $this->client;
-        $call = $this->call;
+        $command = $this->command;
 
         $api_endpoint = 'http://foo/bar';
-        $call->setUrl($api_endpoint);
+        $command->setUrl($api_endpoint);
 
         $params = [
             'appid' => 'WEIXIN_APP_ID',
@@ -44,8 +45,7 @@ class CreateUnifiedOrderTest extends TestCase {
         $client->shouldReceive('call')->withArgs([$api_endpoint, $params])
                                       ->andReturn($result_data);
 
-        $this->assertEquals($result_data, $call->execute($params));
-
+        $this->assertEquals($result_data, $command->execute($params));
     }
 
 }

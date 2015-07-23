@@ -3,7 +3,6 @@
 use GuzzleHttp\ClientInterface as HttpClient;
 use Psr\Http\Message\ResponseInterface as HttpResponse;
 
-
 interface Client {
 
     public function getHttpClient();
@@ -29,5 +28,13 @@ interface Client {
      * @return array
      */
     public function call($url, array $message, array $options=[], HttpResponse &$response=null);
+
+    /**
+     * @param string $handle
+     * @return ITC\Weixin\Payment\Contracts\Command
+     */
+    public function command($handle);
+
+    public function register($handle, Command $command);
 
 }

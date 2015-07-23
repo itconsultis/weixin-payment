@@ -1,11 +1,10 @@
-<?php namespace ITC\Weixin\Payment\Api;
+<?php namespace ITC\Weixin\Payment\Command;
 
 use InvalidArgumentException;
 use ITC\Weixin\Payment\Contracts\Client as ClientInterface;
-use ITC\Weixin\Payment\Contracts\WebServiceCall as CallInterface;
+use ITC\Weixin\Payment\Contracts\Command as CommandInterface;
 
-
-abstract class Call implements CallInterface {
+abstract class Command implements CommandInterface {
 
     /**
      * @param void

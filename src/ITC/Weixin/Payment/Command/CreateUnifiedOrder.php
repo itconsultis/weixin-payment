@@ -1,7 +1,6 @@
-<?php namespace ITC\Weixin\Payment\Api;
+<?php namespace ITC\Weixin\Payment\Command;
 
-
-class CreateUnifiedOrder extends Call {
+class CreateUnifiedOrder extends Command {
 
     /**
      * Satisfies ITC\Weixin\Payment\Call\WebServiceCall#getDefaultUrl
