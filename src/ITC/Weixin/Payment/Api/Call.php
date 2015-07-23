@@ -4,6 +4,7 @@ use InvalidArgumentException;
 use ITC\Weixin\Payment\Contracts\Client as ClientInterface;
 use ITC\Weixin\Payment\Contracts\WebServiceCall as CallInterface;
 
+
 abstract class Call implements CallInterface {
 
     /**

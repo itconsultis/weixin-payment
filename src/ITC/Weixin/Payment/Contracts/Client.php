@@ -3,6 +3,7 @@
 use GuzzleHttp\ClientInterface as HttpClient;
 use Psr\Http\Message\ResponseInterface as HttpResponse;
 
+
 interface Client {
 
     public function getHttpClient();

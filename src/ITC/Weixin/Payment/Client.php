@@ -11,6 +11,7 @@ use ITC\Weixin\Payment\Contracts\Serializer as SerializerInterface;
 use ITC\Weixin\Payment\Util\UUID;
 use ITC\Weixin\Payment\Cache\FileCache;
 
+
 class Client implements ClientInterface {
 
     private $app_id;

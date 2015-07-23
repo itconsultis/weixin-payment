@@ -2,6 +2,7 @@
 
 use ITC\Weixin\Payment\Contracts\HashGenerator as HashGeneratorInterface;
 
+
 /**
  * WeChat request signature generator
  */

@@ -2,6 +2,7 @@
 
 use ITC\Weixin\Payment\Contracts\Serializer as SerializerInterface;
 
+
 class XmlSerializer implements SerializerInterface {
 
     /**
