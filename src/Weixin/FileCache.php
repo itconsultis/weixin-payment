@@ -21,13 +21,13 @@ class FileCache implements CacheInterface {
     public function get($key)
     {
         $data = $this->read();
-        $entry = isset($data[$key]) ? $data[$key] : ['value'=>null];
+        $entry = isset($data[$key]) ? $data[$key] : ['value'=>null, 'expiry'=>null];
 
         if ($entry)
         {
             $expiry = $entry['expiry'];
 
-            if ($expiry && $expiry > time())
+            if ($expiry && $expiry <= time())
             {
                 unset($data[$key]);
                 $this->write($data);
