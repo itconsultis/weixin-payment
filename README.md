@@ -1,5 +1,2 @@
-# Client library for WeChat payments
-
-
-
-
+# weixin-payment
+Client library for WeChat payments
