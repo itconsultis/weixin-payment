@@ -1,14 +1,9 @@
 <?php namespace ITC\Weixin\Contracts;
 
 use GuzzleHttp\ClientInterface as HttpClient;
+use Psr\Http\Message\ResponseInterface as HttpResponse;
 
 interface Client {
-
-    public function getAppId();
-    public function setAppId($app_id);
-
-    public function getAppSecret();
-    public function setAppSecret($app_secret);
 
     public function getHttpClient();
     public function setHttpClient(HttpClient $client);
@@ -18,4 +13,14 @@ interface Client {
 
     public function getSerializer();
     public function setSerializer(Serializer $serializer);
+
+    /**
+     * @param string $url
+     * @param array $data
+     * @param array $headers
+     * @param array $options
+     * @return array
+     */
+    public function call($url, array $data, array $options=[], HttpResponse &$response=null);
+
 }
