@@ -1,6 +1,6 @@
 <?php namespace ITC\Weixin;
 
-use ITC\Weixin\Contracts\Client as ClientInterface;
+use ITC\Weixin\Contracts\PaymentClient as PaymentClientInterface;
 use ITC\Weixin\Contracts\HashGenerator as HashGeneratorInterface;
 use ITC\Weixin\Contracts\Serializer as SerializerInterface;
 use ITC\Weixin\Util\UUID;
@@ -10,13 +10,11 @@ use GuzzleHttp\ClientInterface as HttpClientInterface;
 use GuzzleHttp\Client as HttpClient;
 
 
-class Client implements ClientInterface {
+class Client implements PaymentClientInterface {
 
-    private $credentials = [
-        'app_id' => null,
-        'app_secret' => null,
-        'mch_id' => null,
-    ];
+    private $app_id;
+    private $mch_id;
+    private $secret;
 
     private $paths = [
         'public_key' => null,
@@ -33,7 +31,9 @@ class Client implements ClientInterface {
      */
     public function __construct(array $config=[])
     {
-        $this->credentials = $config['credentials'];
+        $this->app_id = $config['app_id'];
+        $this->mch_id = $config['mch_id'];
+        $this->secret = $config['secret'];
         $this->paths = $config['paths'];
     }
 
@@ -67,7 +67,7 @@ class Client implements ClientInterface {
     {
         if (!$this->hashgen)
         {
-            $this->setHashGenerator(new HashGenerator());
+            $this->setHashGenerator(new HashGenerator($this->secret));
         }
         return $this->hashgen;
     }
@@ -134,11 +134,10 @@ class Client implements ClientInterface {
      */
     public function call($url, array $data, array $options=[], HttpResponse &$response=null)
     {
+        $data['appid'] = $this->app_id;
+        $data['mch_id'] = $this->mch_id;
         $data['nonce_str'] = UUID::v4();
         $data['sign'] = $this->hashgen->hash($data);
-
-        $headers = ['Content-Type'=>'text/xml', 'Accept'=>'text/xml'];
-        $body = $this->serializer->serialize($data);
 
         $response = $this->http->post($url, [
             'body' => $this->serializer->serialize($data),

@@ -3,7 +3,7 @@
 use GuzzleHttp\ClientInterface as HttpClient;
 use Psr\Http\Message\ResponseInterface as HttpResponse;
 
-interface Client {
+interface PaymentClient {
 
     public function getHttpClient();
     public function setHttpClient(HttpClient $client);
