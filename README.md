@@ -6,15 +6,13 @@ A sane PHP client library for WeChat in-app payments
 
 This package wraps WeChat's payment API calls with a a pleasant interface.
 Boilerplate stuff like request signing, nonce generation, and XML serialization
-is abstracted away so you can focus on what matters.
+happens transparently behind the scenes so you can focus on what matters.
 
 ## What it does NOT do
 
-This is for conducting payment transactions *inside the WeChat app*. It is not
-suitable for web payments.
-
-This package does NOT implement WeChat's JSAPI functionality in any way. There
-are plenty of other packages that already do this. [overtrue/wechat](https://packagist.org/packages/overtrue/wechat)
+This is for conducting payment transactions *inside WeChat*. Additionally, this
+package does NOT provide JSAPI functionality in any way. There are plenty of
+other packages that already do this. [overtrue/wechat](https://packagist.org/packages/overtrue/wechat)
 is a pretty good one.
 
 ## How to use it
@@ -68,7 +66,7 @@ array in `config/app.php`:
 
     ITC\Weixin\Payment\ServiceProvider::class
 
-You can obtain a Client instance afterwards like so:
+Afterwards you can obtain the client instance via the service container:
 
 ```php
 $client = App::make('ITC\Weixin\Payment\Contracts\Client');
