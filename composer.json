@@ -2,7 +2,6 @@
     "name": "itc/weixin-payment",
     "description": "WeChat payment library",
     "license": "MIT",
-    "version": "0.1.0",
     "authors": [
         {
             "name": "Rich Choy",
