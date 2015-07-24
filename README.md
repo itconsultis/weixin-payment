@@ -41,6 +41,8 @@ $result = $client->command('create-unified-order')->execute([
 
 `create-unified-order` [reference](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_1)
 
+This command prepares a payment to be executed in the native Wechat application.
+
 ```php
 $result = $client->command('create-unified-order')->execute([
     'openid' => 'wx_9f8a98g9a8geag0',
@@ -52,10 +54,19 @@ $result = $client->command('create-unified-order')->execute([
 
 `create-javascript-parameters` [reference](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_1)
 
+This command returns an array structure that can be JSON-serialized and supplied
+to the Javascript context that executes the payment.
+
 ```php
-$result = $client->command('create-unified-order')->execute([
+$jsbridge_params = $client->command('create-javascript-parameters')->execute([
     'prepay_id' => 12389412928312,
 ]);
+```
+
+```javascript
+WeixinJSBridge.invoke('getBrandWCPayRequest', jsbridge_params, function() {
+    console.log(arguments);
+})
 ```
 
 ## How to install the package
