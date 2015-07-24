@@ -36,7 +36,7 @@ class ServiceProvider extends BaseServiceProvider {
     {
         $client = new Client();
 
-        $client->register('create-unified-order', new Commands\CreateUnifiedOrder());
+        $client->register('create-unified-order', new Command\CreateUnifiedOrder());
 
         return $client;
     }
