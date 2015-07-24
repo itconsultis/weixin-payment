@@ -30,11 +30,22 @@ interface Client {
     public function call($url, array $message, array $options=[], HttpResponse &$response=null);
 
     /**
+     * @param array $message
+     * @param string $nonce
+     * @return array
+     */
+    public function sign(array $message, $nonce=null);
+
+    /**
+     * @param string $handle
+     * @param ITC\Weixin\Payment\Contracts\Command $command
+     * @return void
+     */
+    public function register($handle, Command $command);
+
+    /**
      * @param string $handle
      * @return ITC\Weixin\Payment\Contracts\Command
      */
     public function command($handle);
-
-    public function register($handle, Command $command);
-
 }

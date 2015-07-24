@@ -1,7 +1,6 @@
 <?php namespace ITC\Weixin\Payment;
 
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
-use GuzzleHttp\Client;
 
 class ServiceProvider extends BaseServiceProvider {
 
@@ -36,7 +35,8 @@ class ServiceProvider extends BaseServiceProvider {
     {
         $client = new Client();
 
-        $client->register('create-unified-order', new Commands\CreateUnifiedOrder());
+        $client->register('create-unified-order', new Command\CreateUnifiedOrder());
+        $client->register('create-javascript-parameters', new Command\CreateJavascriptParameters());
 
         return $client;
     }
