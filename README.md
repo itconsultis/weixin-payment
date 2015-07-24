@@ -4,12 +4,17 @@ A sane PHP client library for WeChat in-app payments
 
 ## What it does
 
-This package provides a `Client` class that makes WeChat payments dead simple. 
+This package wraps WeChat's payment API calls with a a pleasant interface.
+Boilerplate stuff like request signing, nonce generation, and XML serialization
+is abstracted away so you can focus on what matters.
 
-## What it doesn't do
+## What it does NOT do
 
-This package does NOT implement WeChat's JSAPI functionality in any way. There are
-plenty of other packages that already do this. [overtrue/wechat](https://packagist.org/packages/overtrue/wechat)
+This is for conducting payment transactions *inside the WeChat app*. It is not
+suitable for web payments.
+
+This package does NOT implement WeChat's JSAPI functionality in any way. There
+are plenty of other packages that already do this. [overtrue/wechat](https://packagist.org/packages/overtrue/wechat)
 is a pretty good one.
 
 ## How to use it
@@ -56,16 +61,22 @@ $result = $client->command('create-unified-order')->execute([
 
 The package ships with a [Laravel 5](http://laravel.com) service provider that
 1) registers commands on the client and 2) registers the Client on the
-application service container. Here's how to obtain a Client instance:
-
-```php
-$client = App::make('ITC\Weixin\Payment\Contracts\Client');
-```
-
-As usual, you can also obtain the Client instance via dependency injection.
+application service container.
 
 Install the service provider by adding the following line to the `providers`
 array in `config/app.php`:
 
     ITC\Weixin\Payment\ServiceProvider::class
+
+You can obtain a Client instance afterwards like so:
+
+```php
+$client = App::make('ITC\Weixin\Payment\Contracts\Client');
+```
+
+As usual, you can also take advantage of dependency injection.
+
+## How to run tests
+
+    ./phpunit
 
