@@ -39,7 +39,7 @@ $result = $client->command('create-unified-order')->execute([
 
 ## Commands
 
-`create-unified-order` [referenec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_1)
+`create-unified-order` [reference](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_1)
 
 ```php
 $result = $client->command('create-unified-order')->execute([
@@ -47,6 +47,14 @@ $result = $client->command('create-unified-order')->execute([
     'trade_type' => 'JSAPI',
     'out_trade_no' => 'domain-order-id',
     'total_fee' => 1000,
+]);
+```
+
+`create-javascript-parameters` [reference](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_1)
+
+```php
+$result = $client->command('create-unified-order')->execute([
+    'prepay_id' => 12389412928312,
 ]);
 ```
 
