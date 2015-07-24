@@ -38,7 +38,7 @@ $result = $client->command('create-unified-order')->execute([
 
 ## Commands
 
-[create-unified-order](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_1)
+`create-unified-order` [referenec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_1)
 
 ```php
 $result = $client->command('create-unified-order')->execute([
