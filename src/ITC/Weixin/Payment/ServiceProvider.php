@@ -53,8 +53,8 @@ class ServiceProvider extends BaseServiceProvider {
             'private_key_path' => config('weixin-payment.private_key_path'),
         ]);
 
-        $client->register('create-unified-order', new Command\CreateUnifiedOrder());
-        $client->register('create-javascript-parameters', new Command\CreateJavascriptParameters());
+        $client->register(new Command\CreateUnifiedOrder());
+        $client->register(new Command\CreateJavascriptParameters());
 
         return $client;
     }
