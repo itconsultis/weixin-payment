@@ -135,11 +135,10 @@ class Client implements ClientInterface {
      */
     public function call($url, array $message, array $options=[], HttpResponse &$response=null)
     {
-        // generate a UUID if an nonce isn't supplied via options
-        $nonce = !empty($options['nonce']) ? $options['nonce'] : UUID::v4();
+        $nonce = !empty($options['nonce']) ? $options['nonce'] : null;
 
         // sign the message
-        $this->sign($message, $nonce);
+        $message = $this->sign($message, $nonce);
 
         // send a POST request (it's always a POST)
         $response = $this->getHttpClient()->post($url, [
@@ -181,14 +180,16 @@ class Client implements ClientInterface {
     /**
      * @param array $message
      * @param string $nonce
-     * @return void
+     * @return array
      */
-    private function sign(array &$message, $nonce)
+    public function sign(array $message, $nonce=null)
     {
         $message['appid'] = $this->app_id;
         $message['mch_id'] = $this->mch_id;
-        $message['nonce_str'] = $nonce;
+        $message['nonce_str'] = $nonce ? $nonce : UUID::v4();
         $message['sign'] = $this->getHashGenerator()->hash($message);
+
+        return $message;
     }
 
 }

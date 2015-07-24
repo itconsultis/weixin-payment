@@ -34,7 +34,9 @@ class ServiceProvider extends BaseServiceProvider {
     private function createClient()
     {
         $client = new Client();
+
         $client->register('create-unified-order', new Command\CreateUnifiedOrder());
+        $client->register('create-javascript-parameters', new Command\CreateJavascriptParameters());
 
         return $client;
     }
