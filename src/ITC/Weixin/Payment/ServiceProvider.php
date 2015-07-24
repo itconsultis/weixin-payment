@@ -35,7 +35,7 @@ class ServiceProvider extends BaseServiceProvider {
         }
 
         $this->publishes([
-            $resources . '/config/weixin-payment.php', 
+            "$resources/config/weixin-payment.php" => config_path('weixin-payment.php'),
         ]);
     }
 
