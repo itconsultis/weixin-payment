@@ -1,6 +1,7 @@
 # weixin-payment
 
-A sane PHP client library for WeChat in-app payments
+A sane PHP client library for WeChat in-app payments, brought to you by the
+nerds at [IT Consultis Shanghai](http://it-consultis.com).
 
 ## What it does
 
@@ -51,14 +52,14 @@ $result = $client->command('create-unified-order')->execute([
 
 ## How to install the package
 
-**Composer**
+### Composer
 
     composer install itc/weixin-payment
 
 ### Laravel
 
 The package ships with a [Laravel 5](http://laravel.com) service provider that
-1) registers commands on the client and 2) registers the Client on the
+registers commands on the client and then registers the Client on the
 application service container.
 
 Install the service provider by adding the following line to the `providers`
