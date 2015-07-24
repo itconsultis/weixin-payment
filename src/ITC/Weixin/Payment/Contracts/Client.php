@@ -37,15 +37,14 @@ interface Client {
     public function sign(array $message, $nonce=null);
 
     /**
-     * @param string $handle
      * @param ITC\Weixin\Payment\Contracts\Command $command
      * @return void
      */
-    public function register($handle, Command $command);
+    public function register(Command $command);
 
     /**
-     * @param string $handle
+     * @param string $name
      * @return ITC\Weixin\Payment\Contracts\Command
      */
-    public function command($handle);
+    public function command($name);
 }

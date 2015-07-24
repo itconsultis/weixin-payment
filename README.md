@@ -52,13 +52,13 @@ $result = $client->command('create-unified-order')->execute([
 ]);
 ```
 
-`create-javascript-parameters` [reference](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_1)
+`create-jsbridge-parameters`
 
 This command returns an array structure that can be JSON-serialized and supplied
 to the Javascript context that executes the payment.
 
 ```php
-$jsbridge_params = $client->command('create-javascript-parameters')->execute([
+$jsbridge_params = $client->command('create-jsbridge-params')->execute([
     'prepay_id' => 12389412928312,
 ]);
 ```
@@ -66,7 +66,7 @@ $jsbridge_params = $client->command('create-javascript-parameters')->execute([
 ```javascript
 WeixinJSBridge.invoke('getBrandWCPayRequest', jsbridge_params, function() {
     console.log(arguments);
-})
+});
 ```
 
 ## How to install the package

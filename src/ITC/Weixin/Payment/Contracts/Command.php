@@ -3,6 +3,12 @@
 interface Command {
 
     /**
+     * @param void
+     * @return string
+     */
+    public function name();
+
+    /**
      * @param array $params
      * @return array
      */
