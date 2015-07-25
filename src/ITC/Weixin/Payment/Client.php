@@ -170,7 +170,7 @@ class Client implements ClientInterface {
      * @param mixed $data
      * @return ITC\Weixin\Payment\Contracts\Message $message
      */
-    public function createMessage($data)
+    public function createMessage($data=null)
     {
         if (is_string($data) && $data)
         {
