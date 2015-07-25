@@ -48,7 +48,9 @@ class CreateUnifiedOrderTest extends TestCase {
         $client->shouldReceive('post')->withArgs([$api_endpoint, $request_message])
                                       ->andReturn($response_message);
 
-        $command->execute($params);
+        $result = $command->execute($params);
+
+        $this->assertSame($response_message, $result);
     }
 
 }
