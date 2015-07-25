@@ -25,6 +25,12 @@ interface Client extends MessageFactory {
     public function secure($secure=true);
 
     /**
+     * @param ITC\Weixin\Payment\Contracts\Message $message
+     * @return void
+     */
+    public function prepareOutboundMessage(Message $message);
+
+    /**
      * @param string $url
      * @param ITC\Weixin\Payment\Contracts\Message $message
      * @param array $options

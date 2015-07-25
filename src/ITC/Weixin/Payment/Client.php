@@ -170,7 +170,7 @@ class Client implements ClientInterface {
      * @param array $data
      * @return ITC\Weixin\Payment\Contracts\Message $message
      */
-    public function createMessage(array $data)
+    public function createMessage(array $data=[])
     {
         return new Message\Message($data, $this->getHashGenerator());
     }
@@ -242,7 +242,7 @@ var_dump($message->toArray());
      * @param ITC\Weixin\Payment\Contracts\Message $message
      * @return void
      */
-    private function prepareOutboundMessage(MessageInterface $message)
+    public function prepareOutboundMessage(MessageInterface $message)
     {
         $message->set('appid', $this->app_id);
         $message->set('mch_id', $this->mch_id);
@@ -262,6 +262,5 @@ var_dump($message->toArray());
         $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
         return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
     }
-
 }
 

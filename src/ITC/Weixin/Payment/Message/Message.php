@@ -12,11 +12,6 @@ class Message implements MessageInterface {
     private $data = [];
 
     /**
-     * @var array
-     */
-    private $package = [];
-
-    /**
      * @param array $data
      * @param ITC\Weixin\Payment\Contracts\HashGenerator $hashgen
      */
@@ -83,12 +78,51 @@ class Message implements MessageInterface {
     }
 
     /**
+     * @param array $query
+     * @return void
+     */
+    public function setPackageQuery(array $query)
+    {
+        $this->set('package', http_build_query($query));
+    }
+
+    /**
      * @param void
      * @return array
      */
     public function toArray()
     {
         return $this->data;
+    }
+
+    /**
+     * @param void
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $payload = $this->data;
+
+        $key_rewrites = [
+            'appid' => 'appId',
+            'nonce_str' => 'nonceStr',
+            'sign' => 'paySign',
+            'timestamp' => 'timeStamp',
+        ];
+
+        foreach ($key_rewrites as $from => $to)
+        {
+            if (isset($payload[$from]))
+            {
+                $payload[$to] = $payload[$from];
+                unset($payload[$from]);
+            }
+        }
+
+        $payload['signType'] = 'MD5';
+        $payload['timeStamp'] = time();
+
+        return $payload;
     }
 
 }

@@ -79,4 +79,30 @@ class MessageTest extends TestCase {
         $hashgen->shouldReceive('hash')->once()->withArgs([['foo'=>1, 'bar'=>'two']])->andReturn('MESSAGE_SIGNATURE');
         $this->assertFalse($message->authenticate());        
     }
+
+    public function test_JsonSerializable_interface()
+    {
+        $data = [
+            'appid' => 'WEIXIN_APP_ID',
+            'nonce_str' => 'NONCE',
+            'mch_id' => 'WEIXIN_MERCHANT_ID',
+            'sign' => 'REQUEST_SIGNATURE',
+        ];
+
+        $message = new Message($data, $this->hashgen);
+        $message->setPackageQuery(['prepay_id'=>'PREPAY_ID']);
+
+        $payload = $message->jsonSerialize();
+
+        $this->assertEquals($data['appid'], $payload['appId']);
+        $this->assertEquals($data['nonce_str'], $payload['nonceStr']);
+        $this->assertTrue(isset($payload['timeStamp']) && is_numeric($payload['timeStamp']));
+        $this->assertEquals('prepay_id=PREPAY_ID', $payload['package']);
+        $this->assertEquals($data['sign'], $payload['paySign']);
+        $this->assertEquals('MD5', $payload['signType']);
+
+        $json = json_encode($message);
+
+        $this->assertJsonStringEqualsJsonString(json_encode($payload), $json);
+    }
 }

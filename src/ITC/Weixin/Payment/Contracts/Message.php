@@ -1,6 +1,8 @@
 <?php namespace ITC\Weixin\Payment\Contracts;
 
-interface Message {
+use JsonSerializable;
+
+interface Message extends JsonSerializable {
 
     /**
      * @param string $attr
@@ -32,6 +34,12 @@ interface Message {
      * @return bool
      */
     public function authenticate();
+
+    /**
+     * @param array $query
+     * @return void
+     */
+    public function setPackageQuery(array $query);
 
     /**
      * @param void
