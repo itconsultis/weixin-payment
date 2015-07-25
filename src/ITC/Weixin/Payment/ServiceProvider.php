@@ -22,14 +22,33 @@ class ServiceProvider extends BaseServiceProvider {
      */
     public function boot()
     {
+        $this->registerClient();
+        $this->registerResources();
+    }
+
+    /**
+     * Registers the Client interface on the service container
+     * @param void
+     * @return void
+     */
+    private function registerClient()
+    {
         $this->app->bind(Contracts\Client::class, function($app)
         {
-            $client = $this->createClient();
+            $client = Client::instance(config('weixin-payment'));
             $client->setLogger($app->make('log'));
 
             return $client;
         });
+    }
 
+    /**
+     * This satisfies vendor:publish requirements
+     * @param void
+     * @return
+     */
+    private function registerResources()
+    {
         $project_root = __DIR__.'/../../../..';
 
         if (!$resources = realpath($project_root.'/resources'))
@@ -41,18 +60,4 @@ class ServiceProvider extends BaseServiceProvider {
             "$resources/config/weixin-payment.php" => config_path('weixin-payment.php'),
         ]);
     }
-
-    /**
-     * @param void
-     * @return ITC\Weixin\Payment\Contracts\Client
-     */
-    private function createClient()
-    {
-        $client = new Client(config('weixin-payment'));
-        $client->register(new Command\CreateUnifiedOrder());
-        $client->register(new Command\CreateJavascriptParameters());
-
-        return $client;
-    }
-
 }

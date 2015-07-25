@@ -11,7 +11,6 @@ use ITC\Weixin\Payment\Contracts\HashGenerator as HashGeneratorInterface;
 use ITC\Weixin\Payment\Contracts\Serializer as SerializerInterface;
 use ITC\Weixin\Payment\Contracts\Command as CommandInterface;
 
-
 class Client implements ClientInterface {
 
     private $app_id;
@@ -27,6 +26,20 @@ class Client implements ClientInterface {
     private $cache;
 
     private $commands = [];
+
+    /**
+     * @param array $config
+     * @return ITC\Weixin\Payment\Client
+     */
+    public static function instance(array $config=[])
+    {
+        $client = new static($config);
+
+        $client->register(new Command\CreateUnifiedOrder());
+        $client->register(new Command\CreateJavascriptParameters());
+
+        return $client;
+    }
 
     /**
      * @param array $config
