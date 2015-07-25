@@ -99,7 +99,9 @@ abstract class Command implements CommandInterface {
             throw new InvalidArgumentException($msg);
         }
 
-        return $this->client->call($this->getUrl(), $params);
+        $message = $this->client->createMessage($params);
+
+        return $this->client->call($this->getUrl(), $message);
     }
 
 }

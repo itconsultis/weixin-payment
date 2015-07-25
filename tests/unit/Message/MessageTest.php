@@ -1,5 +1,6 @@
 <?php namespace ITC\Weixin\Payment\Test;
 
+use JsonSerializable;
 use Mockery;
 use ITC\Weixin\Payment\Contracts\HashGenerator as HashGeneratorInterface;
 use ITC\Weixin\Payment\Contracts\Message as MessageInterface;

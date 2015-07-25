@@ -12,6 +12,11 @@ class Message implements MessageInterface {
     private $data = [];
 
     /**
+     * @var array
+     */
+    private $package = [];
+
+    /**
      * @param array $data
      * @param ITC\Weixin\Payment\Contracts\HashGenerator $hashgen
      */
@@ -85,4 +90,5 @@ class Message implements MessageInterface {
     {
         return $this->data;
     }
+
 }

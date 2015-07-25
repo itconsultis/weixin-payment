@@ -3,7 +3,7 @@
 use Mockery;
 use ITC\Weixin\Payment\Contracts\Command as CommandInterface;
 use ITC\Weixin\Payment\Contracts\Client as ClientInterface;
-use ITC\Weixin\Payment\Contracts\WebServiceCall as CallInterface;
+use ITC\Weixin\Payment\Contracts\Message as MessageInterface;
 use ITC\Weixin\Payment\Command\CreateUnifiedOrder;
 
 class CreateUnifiedOrderTest extends TestCase {
@@ -40,12 +40,13 @@ class CreateUnifiedOrderTest extends TestCase {
             'openid' => 'wx_932509283mkjsdfijaef',
         ];
 
-        $result_data = ['foo'=>1, 'bar'=>'two'];
+        $request_message = Mockery::mock(MessageInterface::class);
+        $response_message = Mockery::mock(MessageInterface::class);
 
-        $client->shouldReceive('call')->withArgs([$api_endpoint, $params])
-                                      ->andReturn($result_data);
+        $client->shouldReceive('createMessage')->withArgs([$params])->andReturn($request_message);
 
-        $this->assertEquals($result_data, $command->execute($params));
+        $client->shouldReceive('post')->withArgs([$api_endpoint, $request_message])
+                                      ->andReturn($response_message);
     }
 
 }
