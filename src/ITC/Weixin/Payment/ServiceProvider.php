@@ -5,8 +5,6 @@ use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider {
 
-    protected $defer = true;
-
     /**
      * Lifecycle moment
      * @param void
@@ -24,9 +22,12 @@ class ServiceProvider extends BaseServiceProvider {
      */
     public function boot()
     {
-        $this->app->singleton(Contracts\Client::class, function($app)
+        $this->app->bind(Contracts\Client::class, function($app)
         {
-            return $this->createClient();
+            $client = $this->createClient();
+            $client->setLogger($app->make('log'));
+
+            return $client;
         });
 
         $project_root = __DIR__.'/../../../..';
@@ -47,16 +48,7 @@ class ServiceProvider extends BaseServiceProvider {
      */
     private function createClient()
     {
-        $client = new Client([
-            'app_id' => config('weixin-payment.app_id'),
-            'mch_id' => config('weixin-payment.mch_id'),
-            'secret' => config('weixin-payment.hash_secret'),
-            'public_key_path' => config('weixin-payment.public_key_path'),
-            'private_key_path' => config('weixin-payment.private_key_path'),
-        ]);
-
-        $client->setLogger($this->app->make('log'));
-
+        $client = new Client(config('weixin-payment'));
         $client->register(new Command\CreateUnifiedOrder());
         $client->register(new Command\CreateJavascriptParameters());
 
