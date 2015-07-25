@@ -78,7 +78,7 @@ class ServiceProvider extends BaseServiceProvider {
             __DIR__.'/Command/CreateJavascriptParameters.php',
             __DIR__.'/DummyLogger.php',
             __DIR__.'/HashGenerator.php',
-            __DIR__.'/XMLSerializer.php',
+            __DIR__.'/XmlSerializer.php',
             __DIR__.'/Client.php',
         ];
     }
