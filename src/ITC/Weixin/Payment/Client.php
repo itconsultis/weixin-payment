@@ -156,25 +156,31 @@ class Client implements ClientInterface {
         return $this->getSerializer()->unserialize($response->getBody());
     }
 
-    public function command($handle)
+    /**
+     * Returns the Command identified by the supplied name
+     * @param string $name
+     * @return ITC\Weixin\Payment\Contracts\Command
+     */
+    public function command($name)
     {
-        if (!isset($this->commands[$handle]))
+        if (!isset($this->commands[$name]))
         {
-            throw new RuntimeException('unknown command: '.$handle);
+            throw new RuntimeException('unknown command: '.$name);
         }
 
-        return $this->commands[$handle];
+        return $this->commands[$name];
     }
 
     /**
-     * @param string $handle
-     * @param 
+     * Registers a Command on the client instance
+     * @param ITC\Weixin\Payment\Contracts\Command $command
+     * @return void
      */
-    public function register($handle, CommandInterface $command)
+    public function register(CommandInterface $command)
     {
         $command->setClient($this);
 
-        $this->commands[$handle] = $command;
+        $this->commands[$command->name()] = $command;
     }
 
     /**

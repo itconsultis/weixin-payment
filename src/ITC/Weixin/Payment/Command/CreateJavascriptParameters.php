@@ -3,29 +3,17 @@
 class CreateJavascriptParameters extends Command {
 
     /**
-     * Satisfies ITC\Weixin\Payment\Call\WebServiceCall#getDefaultUrl
+     * Satisfies ITC\Weixin\Payment\Contracts\Command#name
      * @param void
      * @return string
      */
-    protected function getDefaultUrl()
+    public function name()
     {
-        return ''; // this command doesn't actually hit the API
+        return 'create-jsbridge-params';
     }
 
     /**
-     * Satisfies ITC\Weixin\Payment\Call\WebServiceCall#getRequiredParams
-     * @param void
-     * @return array
-     */
-    protected function getRequiredParams()
-    {
-        return [
-            'prepay_id',
-        ];
-    }
-
-    /**
-     * Satisfies ITC\Weixin\Payment\Contracts\Client#execute
+     * Satisfies ITC\Weixin\Payment\Contracts\Command#execute
      * @param array $params
      * @return array
      * @throws InvalidArgumentException
@@ -41,6 +29,28 @@ class CreateJavascriptParameters extends Command {
             'package' => 'prepay_id='.$params['prepay_id'],
             'signType' => 'MD5',
             'paySign' => $params['sign'],
+        ];
+    }
+
+    /**
+     * Satisfies ITC\Weixin\Payment\Command\Command#getDefaultUrl
+     * @param void
+     * @return string
+     */
+    protected function getDefaultUrl()
+    {
+        return ''; // this command doesn't actually hit the API
+    }
+
+    /**
+     * Satisfies ITC\Weixin\Payment\Command\Command#getRequiredParams
+     * @param void
+     * @return array
+     */
+    protected function getRequiredParams()
+    {
+        return [
+            'prepay_id',
         ];
     }
 }

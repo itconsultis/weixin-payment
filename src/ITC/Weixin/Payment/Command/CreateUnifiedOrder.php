@@ -3,7 +3,32 @@
 class CreateUnifiedOrder extends Command {
 
     /**
-     * Satisfies ITC\Weixin\Payment\Call\WebServiceCall#getDefaultUrl
+     * Satisfies ITC\Weixin\Payment\Contracts\Command#name
+     * @param void
+     * @return string
+     */
+    public function name()
+    {
+        return 'create-unified-order';
+    }
+
+    /**
+     * Overrides ITC\Weixin\Payment\Command\Command#validateParams
+     * @param void
+     * @return array
+     */
+    protected function validateParams(array $params, array &$errors)
+    {
+        parent::validateParams($params, $errors);
+
+        if ($params['trade_type'] === 'JSAPI' && empty($params['openid']))
+        {
+            $errors[] = 'openid parameter is required if trade_type is JSAPI';
+        }
+    }
+
+    /**
+     * Satisfies ITC\Weixin\Payment\Command\Command#getDefaultUrl
      * @param void
      * @return string
      */
@@ -13,7 +38,7 @@ class CreateUnifiedOrder extends Command {
     }
 
     /**
-     * Satisfies ITC\Weixin\Payment\Call\WebServiceCall#getRequiredParams
+     * Satisfies ITC\Weixin\Payment\Command\Command#getRequiredParams
      * @param void
      * @return array
      */
@@ -26,20 +51,5 @@ class CreateUnifiedOrder extends Command {
             'notify_url',
             'trade_type',
         ];
-    }
-
-    /**
-     * Overrides ITC\Weixin\Payment\Call\WebServiceCall#validateParams
-     * @param void
-     * @return array
-     */
-    protected function validateParams(array $params, array &$errors)
-    {
-        parent::validateParams($params, $errors);
-
-        if ($params['trade_type'] === 'JSAPI' && empty($params['openid']))
-        {
-            $errors[] = 'openid parameter is required if trade_type is JSAPI';
-        }
     }
 }

@@ -40,7 +40,7 @@ abstract class Command implements CommandInterface {
     }
 
     /**
-     * Satisfies ITC\Weixin\Payment\Contracts\Client#setUrl
+     * Satisfies ITC\Weixin\Payment\Contracts\Command#setUrl
      * @param string $url
      * @return void
      */
@@ -50,7 +50,7 @@ abstract class Command implements CommandInterface {
     }
 
     /**
-     * Satisfies ITC\Weixin\Payment\Contracts\Client#getUrl
+     * Satisfies ITC\Weixin\Payment\Contracts\Command#getUrl
      * @param void
      * @return string
      */
@@ -64,7 +64,7 @@ abstract class Command implements CommandInterface {
     }
 
     /**
-     * Satisfies ITC\Weixin\Payment\Contracts\Client#setClient
+     * Satisfies ITC\Weixin\Payment\Contracts\Command#setClient
      * @param ITC\Weixin\Payment\Contracts\Client $client
      * @return void
      */
@@ -74,7 +74,7 @@ abstract class Command implements CommandInterface {
     }
 
     /**
-     * Satisfies ITC\Weixin\Payment\Contracts\Client#execute
+     * Satisfies ITC\Weixin\Payment\Contracts\Command#execute
      * @param array $params
      * @return array
      * @throws InvalidArgumentException

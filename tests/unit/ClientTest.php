@@ -46,11 +46,12 @@ class ClientTest extends TestCase {
         $client = $this->client;
 
         $command = Mockery::mock(CommandInterface::class)->makePartial();
+        $command->shouldReceive('name')->once()->andReturn('arbitrary-command-name');
         $command->shouldReceive('setClient')->once()->withArgs([$client]);
 
-        $client->register('arbitrary-command', $command);
+        $client->register($command);
 
-        $this->assertSame($command, $client->command('arbitrary-command'));
+        $this->assertSame($command, $client->command('arbitrary-command-name'));
     }
 
     public function test_call()
