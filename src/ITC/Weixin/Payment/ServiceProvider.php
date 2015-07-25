@@ -60,4 +60,26 @@ class ServiceProvider extends BaseServiceProvider {
             "$resources/config/weixin-payment.php" => config_path('weixin-payment.php'),
         ]);
     }
+
+    /**
+     * @param void
+     * @return array
+     */
+    public static function compiles()
+    {
+        return [
+            __DIR__.'/Contracts/Serializer.php', 
+            __DIR__.'/Contracts/HashGenerator.php', 
+            __DIR__.'/Contracts/Command.php', 
+            __DIR__.'/Contracts/Client.php', 
+            __DIR__.'/Contracts/Client.php', 
+            __DIR__.'/Command/Command.php',
+            __DIR__.'/Command/CreateUnifiedOrder.php',
+            __DIR__.'/Command/CreateJavascriptParameters.php',
+            __DIR__.'/DummyLogger.php',
+            __DIR__.'/HashGenerator.php',
+            __DIR__.'/XMLSerializer.php',
+            __DIR__.'/Client.php',
+        ];
+    }
 }
