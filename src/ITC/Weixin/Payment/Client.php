@@ -2,11 +2,12 @@
 
 use RuntimeException;
 use Psr\Log\LoggerInterface;
-use Psr\Http\Message\ResponseInterface as HttpResponse;
+use Psr\Http\Message\ResponseInterface as HttpResponseInterface;
 use GuzzleHttp\ClientInterface as HttpClientInterface;
 use GuzzleHttp\Client as HttpClient;
 
 use ITC\Weixin\Payment\Contracts\Client as ClientInterface;
+use ITC\Weixin\Payment\Contracts\Message as MessageInterface;
 use ITC\Weixin\Payment\Contracts\HashGenerator as HashGeneratorInterface;
 use ITC\Weixin\Payment\Contracts\Serializer as SerializerInterface;
 use ITC\Weixin\Payment\Contracts\Command as CommandInterface;
@@ -166,33 +167,37 @@ class Client implements ClientInterface {
     }
 
     /**
+     * @param array $data
+     * @return ITC\Weixin\Payment\Contracts\Message $message
+     */
+    public function createMessage(array $data)
+    {
+        return new Message\Message($data, $this->getHashGenerator());
+    }
+
+    /**
      * @param string $url
-     * @param array $message
-     * @param array $options
+     * @param ITC\Weixin\Payment\Contracts\Message $message
      * @param Psr\Http\Message\ResponseInterface $response
      * @return array
      */
-    public function call($url, array $message, array $options=[], HttpResponse &$response=null)
+    public function post($url, MessageInterface $message, HttpResponseInterface &$response=null)
     {
         $log = $this->getLogger();
         $serializer = $this->getSerializer();
 
-        $nonce = !empty($options['nonce']) ? $options['nonce'] : null;
-
-        // sign the message
-        $message = $this->sign($message, $nonce);
-
-        // serialize it
-        $req_body = $serializer->serialize($message);
+        $this->prepareOutboundMessage($message);
+var_dump($message->toArray());
+        $reqbody = $serializer->serialize($message->toArray());
 
         // send a POST request (it's always a POST)
-        $response = $this->getHttpClient()->post($url, ['body'=>$req_body]);
+        $response = $this->getHttpClient()->post($url, ['body'=>$reqbody]);
         $status = (int) $response->getStatusCode();
-        $res_body = $response->getBody();
+        $resbody = $response->getBody();
 
         $log->info("[$status] POST $url", ['method'=>__METHOD__]);
-        $log->debug('  req: '.$req_body, ['method'=>__METHOD__]);
-        $log->debug('  res: '.$res_body, ['method'=>__METHOD__]);
+        $log->debug('  req: '.$reqbody, ['method'=>__METHOD__]);
+        $log->debug('  res: '.$resbody, ['method'=>__METHOD__]);
 
         if ($status < 200 || $status >= 300)
         {
@@ -201,8 +206,9 @@ class Client implements ClientInterface {
             throw new UnexpectedValueException($msg);
         }
 
-        // return the parsed response body
-        return $serializer->unserialize($res_body);
+        $data = $serializer->unserialize($resbody);
+
+        return $this->createMessage($data);
     }
 
     /**
@@ -233,18 +239,15 @@ class Client implements ClientInterface {
     }
 
     /**
-     * @param array $message
-     * @param string $nonce
-     * @return array
+     * @param ITC\Weixin\Payment\Contracts\Message $message
+     * @return void
      */
-    public function sign(array $message, $nonce=null)
+    private function prepareOutboundMessage(MessageInterface $message)
     {
-        $message['appid'] = $this->app_id;
-        $message['mch_id'] = $this->mch_id;
-        $message['nonce_str'] = $nonce ? $nonce : static::uuid();
-        $message['sign'] = $this->getHashGenerator()->hash($message);
-
-        return $message;
+        $message->set('appid', $this->app_id);
+        $message->set('mch_id', $this->mch_id);
+        $message->get('nonce_str') || $message->set('nonce_str', static::uuid());
+        $message->sign();
     }
 
     /**
