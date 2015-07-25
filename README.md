@@ -20,7 +20,7 @@ is a pretty good one.
 
 ```php
 // create the Client instance
-$client = new ITC\Weixin\Payment\Client([
+$client = \ITC\Weixin\Payment\Client::instance([
     'app_id' => 'your appid',
     'secret' => 'your signing secret',
     'mch_id' => 'your merchant id',
@@ -52,7 +52,7 @@ $result = $client->command('create-unified-order')->execute([
 ]);
 ```
 
-`create-jsbridge-parameters`
+`create-jsbridge-params`
 
 This command returns an array structure that can be JSON-serialized and supplied
 to the Javascript context that executes the payment.
@@ -86,7 +86,13 @@ array in `config/app.php`:
 
     ITC\Weixin\Payment\ServiceProvider::class
 
-Afterwards you can obtain the client instance via the service container:
+Then publish the package configuration via:
+
+    php artisan vendor:publish
+
+This publishes a configuration file in `config/weixin-payment.php`.
+
+Afterwards you can obtain the client instance using the service container:
 
 ```php
 $client = App::make('ITC\Weixin\Payment\Contracts\Client');
