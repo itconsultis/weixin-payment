@@ -72,7 +72,6 @@ class ServiceProvider extends BaseServiceProvider {
             __DIR__.'/Contracts/HashGenerator.php', 
             __DIR__.'/Contracts/Command.php', 
             __DIR__.'/Contracts/Client.php', 
-            __DIR__.'/Contracts/Client.php', 
             __DIR__.'/Command/Command.php',
             __DIR__.'/Command/CreateUnifiedOrder.php',
             __DIR__.'/Command/CreateJavascriptParameters.php',
