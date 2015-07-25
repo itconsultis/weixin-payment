@@ -3,8 +3,8 @@
 interface MessageFactory {
 
     /**
-     * @param array $data
+     * @param mixed $data
      * @return ITC\Weixin\Payment\Contracts\Message
      */
-    public function createMessage(array $data=[]);
+    public function createMessage($data);
 }

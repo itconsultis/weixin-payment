@@ -158,7 +158,7 @@ class Client implements ClientInterface {
 
     /**
      * @param void
-       @codeCoverageIgnore
+     * @codeCoverageIgnore
      */
     public function secure($secure=true)
     {
@@ -167,11 +167,16 @@ class Client implements ClientInterface {
     }
 
     /**
-     * @param array $data
+     * @param mixed $data
      * @return ITC\Weixin\Payment\Contracts\Message $message
      */
-    public function createMessage(array $data=[])
+    public function createMessage($data)
     {
+        if (is_string($data) && $data)
+        {
+            $data = $this->getSerializer->unserialize($data);
+        }
+
         return new Message\Message($data, $this->getHashGenerator());
     }
 
@@ -187,7 +192,7 @@ class Client implements ClientInterface {
         $serializer = $this->getSerializer();
 
         $this->prepareOutboundMessage($message);
-var_dump($message->toArray());
+
         $reqbody = $serializer->serialize($message->toArray());
 
         // send a POST request (it's always a POST)
