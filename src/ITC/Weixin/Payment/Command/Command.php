@@ -101,7 +101,7 @@ abstract class Command implements CommandInterface {
 
         $message = $this->client->createMessage($params);
 
-        return $this->client->call($this->getUrl(), $message);
+        return $this->client->post($this->getUrl(), $message);
     }
 
 }
