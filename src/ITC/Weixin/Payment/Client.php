@@ -9,7 +9,6 @@ use ITC\Weixin\Payment\Contracts\Client as ClientInterface;
 use ITC\Weixin\Payment\Contracts\HashGenerator as HashGeneratorInterface;
 use ITC\Weixin\Payment\Contracts\Serializer as SerializerInterface;
 use ITC\Weixin\Payment\Contracts\Command as CommandInterface;
-use ITC\Weixin\Payment\Util\UUID;
 
 
 class Client implements ClientInterface {
@@ -192,10 +191,23 @@ class Client implements ClientInterface {
     {
         $message['appid'] = $this->app_id;
         $message['mch_id'] = $this->mch_id;
-        $message['nonce_str'] = $nonce ? $nonce : UUID::v4();
+        $message['nonce_str'] = $nonce ? $nonce : static::uuid();
         $message['sign'] = $this->getHashGenerator()->hash($message);
 
         return $message;
+    }
+
+    /**
+     * Generates a pseudo-random UUID
+     * @param void
+     * @return string
+     */
+    protected static function uuid()
+    {
+        $data = openssl_random_pseudo_bytes(16);
+        $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
+        $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
+        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
     }
 
 }
