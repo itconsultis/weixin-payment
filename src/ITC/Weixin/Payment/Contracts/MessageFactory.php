@@ -6,5 +6,5 @@ interface MessageFactory {
      * @param mixed $data
      * @return ITC\Weixin\Payment\Contracts\Message
      */
-    public function createMessage($data);
+    public function createMessage($data=null);
 }
