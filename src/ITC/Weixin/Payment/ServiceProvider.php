@@ -5,6 +5,8 @@ use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider {
 
+    protected $defer = true;
+
     /**
      * Lifecycle moment
      * @param void
@@ -53,12 +55,12 @@ class ServiceProvider extends BaseServiceProvider {
             'private_key_path' => config('weixin-payment.private_key_path'),
         ]);
 
+        $client->setLogger($this->app->make('log'));
+
         $client->register(new Command\CreateUnifiedOrder());
         $client->register(new Command\CreateJavascriptParameters());
 
         return $client;
     }
-
-    
 
 }
