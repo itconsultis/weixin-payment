@@ -27,7 +27,7 @@ class ServiceProvider extends BaseServiceProvider {
     }
 
     /**
-     * Registers the Client interface on the service container
+     * Registers the Client on the service container
      * @param void
      * @return void
      */
