@@ -1,18 +1,22 @@
 <?php namespace ITC\Weixin\Payment\Contracts;
 
-use GuzzleHttp\ClientInterface as HttpClient;
+use Psr\Log\LoggerInterface as Logger;
 use Psr\Http\Message\ResponseInterface as HttpResponse;
+use GuzzleHttp\ClientInterface as HttpClient;
 
 interface Client {
 
-    public function getHttpClient();
     public function setHttpClient(HttpClient $client);
+    public function getHttpClient();
 
-    public function getHashGenerator();
     public function setHashGenerator(HashGenerator $hashgen);
+    public function getHashGenerator();
 
-    public function getSerializer();
     public function setSerializer(Serializer $serializer);
+    public function getSerializer();
+
+    public function setLogger(Logger $logger);
+    public function getLogger();
 
     /**
      * @param bool $secure

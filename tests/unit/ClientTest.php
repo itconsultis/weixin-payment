@@ -1,6 +1,7 @@
 <?php namespace ITC\Weixin\Payment\Test;
 
 use Mockery;
+use Psr\Log\LoggerInterface;
 use GuzzleHttp\ClientInterface as HttpClientInterface;
 use ITC\Weixin\Payment\Contracts\Serializer as SerializerInterface;
 use ITC\Weixin\Payment\Contracts\Command as CommandInterface;
@@ -18,6 +19,12 @@ class ClientTest extends TestCase {
         $this->serializer = Mockery::mock(SerializerInterface::class)->makePartial();
         $this->hashgen = Mockery::mock(HashGeneratorInterface::class)->makePartial();
         $this->http = Mockery::mock(HttpClientInterface::class)->makePartial();
+        $this->logger = Mockery::mock(LoggerInterface::class);
+
+        foreach (['log', 'debug', 'info', 'notice', 'warning', 'error'] as $log_level)
+        {
+            $this->logger->shouldReceive($log_level)->withAnyArgs();
+        }
 
         $this->app_id = 'WEIXIN_APP_ID';
         $this->mch_id = 'WEIXIN_MERCHANT_ID';
@@ -31,6 +38,7 @@ class ClientTest extends TestCase {
             'private_key_path' => '/path/to/private/key',
         ]);
 
+        $this->client->setLogger($this->logger);
         $this->client->setHttpClient($this->http);
         $this->client->setSerializer($this->serializer);
         $this->client->setHashGenerator($this->hashgen);

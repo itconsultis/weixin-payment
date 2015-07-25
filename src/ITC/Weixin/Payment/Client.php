@@ -1,6 +1,7 @@
 <?php namespace ITC\Weixin\Payment;
 
 use RuntimeException;
+use Psr\Log\LoggerInterface;
 use Psr\Http\Message\ResponseInterface as HttpResponse;
 use GuzzleHttp\ClientInterface as HttpClientInterface;
 use GuzzleHttp\Client as HttpClient;
@@ -19,6 +20,7 @@ class Client implements ClientInterface {
     private $public_key_path;
     private $private_key_path;
 
+    private $logger;
     private $http;
     private $hashgen;
     private $serializer;
@@ -41,6 +43,40 @@ class Client implements ClientInterface {
     }
 
     /**
+     * @param Psr\Log\LoggerInterface $logger
+     * @return void
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * @param void
+     * @return Psr\Log\LoggerInterface $logger
+     */
+    public function getLogger()
+    {
+        // @codeCoverageIgnoreStart
+        if (!$this->logger)
+        {
+            $this->logger = new DummyLogger();
+        }
+        // @codeCoverageIgnoreEnd
+
+        return $this->logger;
+    }
+
+    /**
+     * @param GuzzleHttp\ClientInterface $client
+     * @return void
+     */
+    public function setHttpClient(HttpClientInterface $client)
+    {
+        $this->http = $client;
+    }
+
+    /**
      * @param void
      * @return GuzzleHttp\ClientInterface
      */
@@ -57,12 +93,12 @@ class Client implements ClientInterface {
     }
 
     /**
-     * @param GuzzleHttp\ClientInterface $client
+     * @param ITC\Weixin\Contracts\HashGenerator $hashgen
      * @return void
      */
-    public function setHttpClient(HttpClientInterface $client)
+    public function setHashGenerator(HashGeneratorInterface $hashgen)
     {
-        $this->http = $client;
+        $this->hashgen = $hashgen;
     }
 
     /**
@@ -82,12 +118,12 @@ class Client implements ClientInterface {
     }
 
     /**
-     * @param ITC\Weixin\Contracts\HashGenerator $hashgen
+     * @param ITC\Weixin\Contracts\Serializer
      * @return void
      */
-    public function setHashGenerator(HashGeneratorInterface $hashgen)
+    public function setSerializer(SerializerInterface $serializer)
     {
-        $this->hashgen = $hashgen;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -104,15 +140,6 @@ class Client implements ClientInterface {
         // @codeCoverageIgnoreEnd
 
         return $this->serializer;
-    }
-
-    /**
-     * @param ITC\Weixin\Contracts\Serializer
-     * @return void
-     */
-    public function setSerializer(SerializerInterface $serializer)
-    {
-        $this->serializer = $serializer;
     }
 
     /**
@@ -134,25 +161,35 @@ class Client implements ClientInterface {
      */
     public function call($url, array $message, array $options=[], HttpResponse &$response=null)
     {
+        $log = $this->getLogger();
+        $serializer = $this->getSerializer();
+
         $nonce = !empty($options['nonce']) ? $options['nonce'] : null;
 
         // sign the message
         $message = $this->sign($message, $nonce);
 
-        // send a POST request (it's always a POST)
-        $response = $this->getHttpClient()->post($url, [
-            'body' => $this->getSerializer()->serialize($message),
-        ]);
+        // serialize it
+        $req_body = $serializer->serialize($message);
 
+        // send a POST request (it's always a POST)
+        $response = $this->getHttpClient()->post($url, ['body'=>$req_body]);
         $status = (int) $response->getStatusCode();
+        $res_body = $response->getBody();
+
+        $log->info("[$status] POST $url", ['method'=>__METHOD__]);
+        $log->debug('  req: '.$req_body, ['method'=>__METHOD__]);
+        $log->debug('  res: '.$res_body, ['method'=>__METHOD__]);
 
         if ($status < 200 || $status >= 300)
         {
-            throw new UnexpectedValueException('got unexpected HTTP status '.$status);
+            $msg = 'got unexpected HTTP response status '.$status;
+            $log->error($msg, ['method'=>__METHOD__]);
+            throw new UnexpectedValueException($msg);
         }
 
         // return the parsed response body
-        return $this->getSerializer()->unserialize($response->getBody());
+        return $serializer->unserialize($res_body);
     }
 
     /**
