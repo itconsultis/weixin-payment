@@ -6,6 +6,8 @@ use ITC\Weixin\Payment\Contracts\Command as CommandInterface;
 
 abstract class Command implements CommandInterface {
 
+    private $url;
+
     /**
      * @param void
      * @return string
