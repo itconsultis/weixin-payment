@@ -1,6 +1,6 @@
 # weixin-payment
 
-A sane PHP client for WeChat payments.
+A pain-free PHP client library for WeChat payments
 
 ## What it does
 
@@ -133,7 +133,7 @@ WeixinJSBridge.invoke('getBrandWCPayRequest', jsbridge_params, function(result) 
 This library represents XML payloads transported between the client and the
 WeChat web service as *messages*. A `Message` is an object that provides uniform
 key/value access to the underlying data structure. More importantly it exposes
-a dead simple interface for signing and signature verification.
+a dead-simple interface for signing and signature verification.
 
 ```php
 $message = $client->createMessage(['foo'=>1, 'bar'=>'two']);
