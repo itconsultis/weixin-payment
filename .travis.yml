@@ -8,4 +8,4 @@ php:
   - nightly
 
 install:
-  - composer install
+  - composer install && composer dumpauto
