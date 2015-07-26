@@ -75,57 +75,43 @@ WeixinJSBridge.invoke('getBrandWCPayRequest', jsbridge_params, function(result) 
 - `pay/orderquery` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_2&index=4) (NOT IMPLEMENTED)
 
     ```php
-    $result = $client->command('pay/orderquery')->execute([
-        // ...
-    ]);
+    $result = $client->command('pay/orderquery')->execute([/* ... */]);
     ```
 
 - `pay/closeorder` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_3&index=5) (NOT IMPLEMENTED)
 
     ```php
-    $result = $client->command('pay/closeorder')->execute([
-        // ...
-    ]);
+    $result = $client->command('pay/closeorder')->execute([/* ... */]);
     ```
 
 - `secapi/refund` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_4&index=6) (NOT IMPLEMENTED)
 
     ```php
-    $result = $client->command('secapi/refund')->execute([
-        // ...
-    ]);
+    $result = $client->command('secapi/refund')->execute([/* ... */]);
     ```
 
 - `pay/refundquery` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_5&index=7) (NOT IMPLEMENTED)
 
     ```php
-    $result = $client->command('pay/refundquery')->execute([
-        // ...
-    ]);
+    $result = $client->command('pay/refundquery')->execute([/* ... */]);
     ```
 
 - `pay/downloadbill` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_6&index=8) (NOT IMPLEMENTED)
 
     ```php
-    $result = $client->command('pay/downloadbill')->execute([
-        // ...
-    ]);
+    $result = $client->command('pay/downloadbill')->execute([/* ... */]);
     ```
 
 - `payitil/report` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_8&index=9) (NOT IMPLEMENTED)
 
     ```php
-    $result = $client->command('payitil/report')->execute([
-        // ...
-    ]);
+    $result = $client->command('payitil/report')->execute([/* ... */]);
     ```
 
 - `tools/shorturl` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_9&index=10) (NOT IMPLEMENTED)
 
     ```php
-    $result = $client->command('tools/shorturl')->execute([
-        // ...
-    ]);
+    $result = $client->command('tools/shorturl')->execute([/* ... */]);
     ```
 
 ## Messages
@@ -177,15 +163,12 @@ Then publish the package configuration via:
 
     php artisan vendor:publish
 
-This publishes a configuration file in `config/weixin-payment.php`.
-
-You can obtain the client instance using the service container:
+Now you can access the client instance via dependency injection or through the
+service container:
 
 ```php
 $client = App::make('ITC\Weixin\Payment\Contracts\Client');
 ```
-
-As usual, you can also take advantage of dependency injection.
 
 ## Contributing
 

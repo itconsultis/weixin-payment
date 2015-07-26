@@ -1,5 +1,7 @@
 <?php namespace ITC\Weixin\Payment;
 
+use OutOfBoundsException;
+use UnexpectedValueException;
 use RuntimeException;
 use Psr\Log\LoggerInterface;
 use Psr\Http\Message\ResponseInterface as HttpResponseInterface;
@@ -224,7 +226,7 @@ class Client implements ClientInterface {
     {
         if (!isset($this->commands[$name]))
         {
-            throw new RuntimeException('unknown command: '.$name);
+            throw new OutOfBoundsException('unknown command: '.$name);
         }
 
         return $this->commands[$name];

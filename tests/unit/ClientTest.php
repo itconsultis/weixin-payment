@@ -1,5 +1,7 @@
 <?php namespace ITC\Weixin\Payment\Test;
 
+use OutOfBoundsException;
+use UnexpectedValueException;
 use Mockery;
 use JsonSerializable;
 use Psr\Log\LoggerInterface;
@@ -66,7 +68,7 @@ class ClientTest extends TestCase {
         $this->assertSame($command, $client->command('arbitrary-command-name'));
     }
 
-    public function test_post()
+    public function test_post_success_case()
     {
         $client = $this->client;
         $http = $this->http;
@@ -116,6 +118,41 @@ class ClientTest extends TestCase {
         $this->assertSame('RESPONSE_MESSAGE_SIGNATURE', $response_message->get('sign'));
     }
 
+    public function test_post_http_400_error_case()
+    {
+        $client = $this->client;
+        $http = $this->http;
+        $serializer = $this->serializer;
+
+        $url = 'http://foo/bar';
+        $data = ['foo'=>1];
+
+        $message = Mockery::mock(MessageInterface::class);
+        $message->shouldReceive('toArray')->andReturn($data);
+        $message->shouldReceive('set');
+        $message->shouldReceive('get');
+        $message->shouldReceive('sign');
+
+        $serializer->shouldReceive('serialize')->withArgs([$data])->andReturn('<xml><foo>1</foo></xml>');
+
+        $http_response= Mockery::mock(HttpResponseInterface::class);
+        $http_response->shouldReceive('getStatusCode')->atLeast()->once()->andReturn(400);
+        $http_response->shouldReceive('getBody')->andReturn('<xml><wtf>dude></wtf></xml>');
+
+        $http->shouldReceive('post')->withAnyArgs()->andReturn($http_response);
+
+        try
+        {
+            $client->post($url, $message);
+        }
+        catch (UnexpectedValueException $e)
+        {
+            return;
+        }
+
+        $this->fail();
+    }
+
     public function test_access_to_autoregistered_commands()
     {
         $client = Client::instance([
@@ -158,6 +195,20 @@ class ClientTest extends TestCase {
         $this->assertTrue($message instanceof MessageInterface);
         $this->assertEquals(1, $message->get('foo'));
         $this->assertEquals('two', $message->get('bar'));
+    }
+
+    public function test_passes_if_exception_is_raised()
+    {
+        try
+        {
+            $this->client->command('unregistered-command');
+        }
+        catch (OutOfBoundsException $e)
+        {
+            return;    
+        }
+
+        $this->fail();
     }
 
 }

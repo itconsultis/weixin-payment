@@ -3,6 +3,9 @@
 use UnexpectedValueException;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
+/**
+ * @codeCoverageIgnore
+ */
 class ServiceProvider extends BaseServiceProvider {
 
     /**
