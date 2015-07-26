@@ -178,7 +178,7 @@ class Client implements ClientInterface {
             $data = $this->getSerializer()->unserialize($data);
         }
 
-        return new Message\Message($data, $this->getHashGenerator());
+        return new Message\Message($this->getHashGenerator(), $data);
     }
 
     /**
@@ -264,7 +264,7 @@ class Client implements ClientInterface {
     public function jsapize(array $query, $nonce=null, $timestamp=null)
     {
         $message = $this->createMessage();
-        $message->setPackageQuery($query);
+        $message->set('package', $query);
 
         $nonce && $message->set('nonce_str', $nonce);
         $timestamp && $message->set('timestamp', $timestamp);

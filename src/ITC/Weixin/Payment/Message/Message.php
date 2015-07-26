@@ -12,13 +12,17 @@ class Message implements MessageInterface {
     private $data = [];
 
     /**
-     * @param array $data
      * @param ITC\Weixin\Payment\Contracts\HashGenerator $hashgen
+     * @param array $data
      */
-    public function __construct($data=[], HashGeneratorInterface $hashgen)
+    public function __construct(HashGeneratorInterface $hashgen, array $data=null)
     {
-        $this->data = (array) $data;
         $this->hashgen = $hashgen;
+
+        foreach ((array) $data as $attr => $value)
+        {
+            $this->set($attr, $value);
+        }
     }
 
     /**
@@ -37,7 +41,7 @@ class Message implements MessageInterface {
      */
     public function set($attr, $value)
     {
-        $this->data[$attr] = $value;
+        $this->data[$attr] = is_array($value) ? http_build_query($value) : $value;
     }
 
     /**
@@ -77,15 +81,6 @@ class Message implements MessageInterface {
         }
 
         return false;
-    }
-
-    /**
-     * @param array $query
-     * @return void
-     */
-    public function setPackageQuery(array $query)
-    {
-        $this->set('package', http_build_query($query));
     }
 
     /**

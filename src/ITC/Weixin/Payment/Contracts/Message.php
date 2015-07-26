@@ -36,12 +36,6 @@ interface Message extends JsonSerializable {
     public function authenticate();
 
     /**
-     * @param array $query
-     * @return void
-     */
-    public function setPackageQuery(array $query);
-
-    /**
      * @param void
      * @return array
      */
