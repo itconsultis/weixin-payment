@@ -22,11 +22,33 @@ class ServiceProvider extends BaseServiceProvider {
      */
     public function boot()
     {
-        $this->app->singleton(Contracts\Client::class, function($app)
-        {
-            return $this->createClient();
-        });
+        $this->registerClient();
+        $this->registerResources();
+    }
 
+    /**
+     * Registers the Client on the service container
+     * @param void
+     * @return void
+     */
+    private function registerClient()
+    {
+        $this->app->bind(Contracts\Client::class, function($app)
+        {
+            $client = Client::instance(config('weixin-payment'));
+            $client->setLogger($app->make('log'));
+
+            return $client;
+        });
+    }
+
+    /**
+     * This satisfies vendor:publish requirements
+     * @param void
+     * @return
+     */
+    private function registerResources()
+    {
         $project_root = __DIR__.'/../../../..';
 
         if (!$resources = realpath($project_root.'/resources'))
@@ -41,24 +63,22 @@ class ServiceProvider extends BaseServiceProvider {
 
     /**
      * @param void
-     * @return ITC\Weixin\Payment\Contracts\Client
+     * @return array
      */
-    private function createClient()
+    public static function compiles()
     {
-        $client = new Client([
-            'app_id' => config('weixin-payment.app_id'),
-            'mch_id' => config('weixin-payment.mch_id'),
-            'secret' => config('weixin-payment.hash_secret'),
-            'public_key_path' => config('weixin-payment.public_key_path'),
-            'private_key_path' => config('weixin-payment.private_key_path'),
-        ]);
-
-        $client->register(new Command\CreateUnifiedOrder());
-        $client->register(new Command\CreateJavascriptParameters());
-
-        return $client;
+        return [
+            __DIR__.'/Contracts/Serializer.php', 
+            __DIR__.'/Contracts/HashGenerator.php', 
+            __DIR__.'/Contracts/Command.php', 
+            __DIR__.'/Contracts/Client.php', 
+            __DIR__.'/Command/Command.php',
+            __DIR__.'/Command/CreateUnifiedOrder.php',
+            __DIR__.'/Command/CreateJavascriptParameters.php',
+            __DIR__.'/DummyLogger.php',
+            __DIR__.'/HashGenerator.php',
+            __DIR__.'/XmlSerializer.php',
+            __DIR__.'/Client.php',
+        ];
     }
-
-    
-
 }

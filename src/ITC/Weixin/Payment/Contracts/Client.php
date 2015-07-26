@@ -1,18 +1,22 @@
 <?php namespace ITC\Weixin\Payment\Contracts;
 
-use GuzzleHttp\ClientInterface as HttpClient;
+use Psr\Log\LoggerInterface as Logger;
 use Psr\Http\Message\ResponseInterface as HttpResponse;
+use GuzzleHttp\ClientInterface as HttpClient;
 
-interface Client {
+interface Client extends MessageFactory {
 
-    public function getHttpClient();
     public function setHttpClient(HttpClient $client);
+    public function getHttpClient();
 
-    public function getHashGenerator();
     public function setHashGenerator(HashGenerator $hashgen);
+    public function getHashGenerator();
 
-    public function getSerializer();
     public function setSerializer(Serializer $serializer);
+    public function getSerializer();
+
+    public function setLogger(Logger $logger);
+    public function getLogger();
 
     /**
      * @param bool $secure
@@ -22,19 +26,11 @@ interface Client {
 
     /**
      * @param string $url
-     * @param array $message
-     * @param array $headers
+     * @param ITC\Weixin\Payment\Contracts\Message $message
      * @param array $options
      * @return array
      */
-    public function call($url, array $message, array $options=[], HttpResponse &$response=null);
-
-    /**
-     * @param array $message
-     * @param string $nonce
-     * @return array
-     */
-    public function sign(array $message, $nonce=null);
+    public function post($url, Message $message, HttpResponse &$response=null);
 
     /**
      * @param ITC\Weixin\Payment\Contracts\Command $command
@@ -47,4 +43,13 @@ interface Client {
      * @return ITC\Weixin\Payment\Contracts\Command
      */
     public function command($name);
+
+    /**
+     * @param array $query
+     * @param string $nonce - optional
+     * @param integer $timestamp - optional
+     * @return JsonSerializable
+     */
+    public function jsapize(array $query, $nonce=null, $timestamp=null);
+
 }

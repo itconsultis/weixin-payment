@@ -6,6 +6,9 @@ use ITC\Weixin\Payment\Contracts\Command as CommandInterface;
 
 abstract class Command implements CommandInterface {
 
+    private $url;
+    protected $client;
+
     /**
      * @param void
      * @return string
@@ -97,7 +100,9 @@ abstract class Command implements CommandInterface {
             throw new InvalidArgumentException($msg);
         }
 
-        return $this->client->call($this->getUrl(), $params);
+        $message = $this->client->createMessage($params);
+
+        return $this->client->post($this->getUrl(), $message);
     }
 
 }

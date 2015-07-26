@@ -1,16 +1,16 @@
 <?php namespace ITC\Weixin\Payment;
 
 use RuntimeException;
-use Psr\Http\Message\ResponseInterface as HttpResponse;
+use Psr\Log\LoggerInterface;
+use Psr\Http\Message\ResponseInterface as HttpResponseInterface;
 use GuzzleHttp\ClientInterface as HttpClientInterface;
 use GuzzleHttp\Client as HttpClient;
 
 use ITC\Weixin\Payment\Contracts\Client as ClientInterface;
+use ITC\Weixin\Payment\Contracts\Message as MessageInterface;
 use ITC\Weixin\Payment\Contracts\HashGenerator as HashGeneratorInterface;
 use ITC\Weixin\Payment\Contracts\Serializer as SerializerInterface;
 use ITC\Weixin\Payment\Contracts\Command as CommandInterface;
-use ITC\Weixin\Payment\Util\UUID;
-
 
 class Client implements ClientInterface {
 
@@ -20,12 +20,26 @@ class Client implements ClientInterface {
     private $public_key_path;
     private $private_key_path;
 
+    private $logger;
     private $http;
     private $hashgen;
     private $serializer;
     private $cache;
 
     private $commands = [];
+
+    /**
+     * @param array $config
+     * @return ITC\Weixin\Payment\Client
+     */
+    public static function instance(array $config=[])
+    {
+        $client = new static($config);
+
+        $client->register(new Command\CreateUnifiedOrder());
+
+        return $client;
+    }
 
     /**
      * @param array $config
@@ -39,6 +53,40 @@ class Client implements ClientInterface {
         $this->private_key_path = $config['private_key_path'];
 
         !empty($config['secure']) && $this->secure();
+    }
+
+    /**
+     * @param Psr\Log\LoggerInterface $logger
+     * @return void
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * @param void
+     * @return Psr\Log\LoggerInterface $logger
+     */
+    public function getLogger()
+    {
+        // @codeCoverageIgnoreStart
+        if (!$this->logger)
+        {
+            $this->logger = new DummyLogger();
+        }
+        // @codeCoverageIgnoreEnd
+
+        return $this->logger;
+    }
+
+    /**
+     * @param GuzzleHttp\ClientInterface $client
+     * @return void
+     */
+    public function setHttpClient(HttpClientInterface $client)
+    {
+        $this->http = $client;
     }
 
     /**
@@ -58,12 +106,12 @@ class Client implements ClientInterface {
     }
 
     /**
-     * @param GuzzleHttp\ClientInterface $client
+     * @param ITC\Weixin\Contracts\HashGenerator $hashgen
      * @return void
      */
-    public function setHttpClient(HttpClientInterface $client)
+    public function setHashGenerator(HashGeneratorInterface $hashgen)
     {
-        $this->http = $client;
+        $this->hashgen = $hashgen;
     }
 
     /**
@@ -83,12 +131,12 @@ class Client implements ClientInterface {
     }
 
     /**
-     * @param ITC\Weixin\Contracts\HashGenerator $hashgen
+     * @param ITC\Weixin\Contracts\Serializer
      * @return void
      */
-    public function setHashGenerator(HashGeneratorInterface $hashgen)
+    public function setSerializer(SerializerInterface $serializer)
     {
-        $this->hashgen = $hashgen;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -108,17 +156,8 @@ class Client implements ClientInterface {
     }
 
     /**
-     * @param ITC\Weixin\Contracts\Serializer
-     * @return void
-     */
-    public function setSerializer(SerializerInterface $serializer)
-    {
-        $this->serializer = $serializer;
-    }
-
-    /**
      * @param void
-       @codeCoverageIgnore
+     * @codeCoverageIgnore
      */
     public function secure($secure=true)
     {
@@ -127,33 +166,53 @@ class Client implements ClientInterface {
     }
 
     /**
+     * @param mixed $data
+     * @return ITC\Weixin\Payment\Contracts\Message $message
+     */
+    public function createMessage($data=null)
+    {
+        if (is_string($data) && $data)
+        {
+            $data = $this->getSerializer->unserialize($data);
+        }
+
+        return new Message\Message($data, $this->getHashGenerator());
+    }
+
+    /**
      * @param string $url
-     * @param array $message
-     * @param array $options
+     * @param ITC\Weixin\Payment\Contracts\Message $message
      * @param Psr\Http\Message\ResponseInterface $response
      * @return array
      */
-    public function call($url, array $message, array $options=[], HttpResponse &$response=null)
+    public function post($url, MessageInterface $message, HttpResponseInterface &$response=null)
     {
-        $nonce = !empty($options['nonce']) ? $options['nonce'] : null;
+        $log = $this->getLogger();
+        $serializer = $this->getSerializer();
 
-        // sign the message
-        $message = $this->sign($message, $nonce);
+        $this->prepare($message);
+
+        $reqbody = $serializer->serialize($message->toArray());
 
         // send a POST request (it's always a POST)
-        $response = $this->getHttpClient()->post($url, [
-            'body' => $this->getSerializer()->serialize($message),
-        ]);
-
+        $response = $this->getHttpClient()->post($url, ['body'=>$reqbody]);
         $status = (int) $response->getStatusCode();
+        $resbody = $response->getBody();
+
+        $log->info("[$status] POST $url", ['method'=>__METHOD__]);
+        $log->debug('  req: '.$reqbody, ['method'=>__METHOD__]);
+        $log->debug('  res: '.$resbody, ['method'=>__METHOD__]);
 
         if ($status < 200 || $status >= 300)
         {
-            throw new UnexpectedValueException('got unexpected HTTP status '.$status);
+            $msg = 'got unexpected HTTP response status '.$status;
+            $log->error($msg, ['method'=>__METHOD__]);
+            throw new UnexpectedValueException($msg);
         }
 
-        // return the parsed response body
-        return $this->getSerializer()->unserialize($response->getBody());
+        $data = $serializer->unserialize($resbody);
+
+        return $this->createMessage($data);
     }
 
     /**
@@ -184,19 +243,46 @@ class Client implements ClientInterface {
     }
 
     /**
-     * @param array $message
-     * @param string $nonce
-     * @return array
+     * Prepares a message for outbound transport
+     * @param ITC\Weixin\Payment\Contracts\Message $message
+     * @return void
      */
-    public function sign(array $message, $nonce=null)
+    private function prepare(MessageInterface $message)
     {
-        $message['appid'] = $this->app_id;
-        $message['mch_id'] = $this->mch_id;
-        $message['nonce_str'] = $nonce ? $nonce : UUID::v4();
-        $message['sign'] = $this->getHashGenerator()->hash($message);
+        $message->set('appid', $this->app_id);
+        $message->set('mch_id', $this->mch_id);
+        $message->get('nonce_str') || $message->set('nonce_str', static::uuid());
+        $message->sign();
+    }
+
+    /**
+     * @param array $query
+     * @return JsonSerializable
+     */
+    public function jsapize(array $query, $nonce=null, $timestamp=null)
+    {
+        $message = $this->createMessage();
+        $message->setPackageQuery($query);
+
+        $nonce && $message->set('nonce_str', $nonce);
+        $timestamp && $message->set('timestamp', $timestamp);
+
+        $this->prepare($message);
 
         return $message;
     }
 
+    /**
+     * Generates a pseudo-random UUID
+     * @param void
+     * @return string
+     */
+    protected static function uuid()
+    {
+        $data = openssl_random_pseudo_bytes(16);
+        $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
+        $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
+        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+    }
 }
 
