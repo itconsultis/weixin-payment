@@ -147,4 +147,17 @@ class ClientTest extends TestCase {
         $this->assertJsonStringEqualsJsonString($expected, $actual);
     }
 
+    public function test_createMessage_automatic_unserialization_behavior()
+    {
+        $xml = '<xml><foo>1</foo><bar>two</bar></xml>';
+
+        $this->serializer->shouldReceive('unserialize')->withArgs([$xml])->andReturn(['foo'=>1, 'bar'=>'two']);
+
+        $message = $this->client->createMessage($xml);
+
+        $this->assertTrue($message instanceof MessageInterface);
+        $this->assertEquals(1, $message->get('foo'));
+        $this->assertEquals('two', $message->get('bar'));
+    }
+
 }

@@ -173,7 +173,7 @@ class Client implements ClientInterface {
     {
         if (is_string($data) && $data)
         {
-            $data = $this->getSerializer->unserialize($data);
+            $data = $this->getSerializer()->unserialize($data);
         }
 
         return new Message\Message($data, $this->getHashGenerator());
