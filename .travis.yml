@@ -7,5 +7,6 @@ php:
   - hhvm
   - nightly
 
-install:
-  - composer install && composer dumpauto
+install: composer -v install
+script: ./phpunit
+
