@@ -72,12 +72,10 @@ class Client implements ClientInterface {
      */
     public function getLogger()
     {
-        // @codeCoverageIgnoreStart
         if (!$this->logger)
         {
             $this->logger = new DummyLogger();
         }
-        // @codeCoverageIgnoreEnd
 
         return $this->logger;
     }
@@ -97,12 +95,10 @@ class Client implements ClientInterface {
      */
     public function getHttpClient()
     {
-        // @codeCoverageIgnoreStart
         if (!$this->http)
         {
             $this->setHttpClient(new HttpClient());
         }
-        // @codeCoverageIgnoreEnd
 
         return $this->http;
     }
@@ -122,12 +118,10 @@ class Client implements ClientInterface {
      */
     public function getHashGenerator()
     {
-        // @codeCoverageIgnoreStart
         if (!$this->hashgen)
         {
             $this->setHashGenerator(new HashGenerator($this->secret));
         }
-        // @codeCoverageIgnoreEnd
 
         return $this->hashgen;
     }
@@ -147,12 +141,10 @@ class Client implements ClientInterface {
      */
     public function getSerializer()
     {
-        // @codeCoverageIgnoreStart
         if (!$this->serializer)
         {
             $this->setSerializer(new XmlSerializer());
         }
-        // @codeCoverageIgnoreEnd
 
         return $this->serializer;
     }
