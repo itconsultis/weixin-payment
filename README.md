@@ -128,7 +128,37 @@ WeixinJSBridge.invoke('getBrandWCPayRequest', jsbridge_params, function(result) 
     ]);
     ```
 
-## How to install the package
+## Messages
+
+This library represents XML payloads transported between the client and the
+WeChat web service as *messages*. A `Message` is an object that provides uniform
+key/value access to the underlying data structure. More importantly it exposes
+a dead simple interface for signing and signature verification.
+
+```php
+$message = $client->createMessage(['foo'=>1, 'bar'=>'two']);
+
+// authenticate an unsigned message; returns boolean false
+$message->authenticate(); 
+
+// sign the message
+$message->sign();
+
+// authenticate a signed message; returns boolean true
+$message->authenticate();
+```
+
+When you execute a command, you are actually getting back a `Message` that
+can be authenticated at any time.
+
+```php
+$result = $client->command('pay/unifiedorder')->execute([/* ... */]);
+
+// boolean true or false
+$authentic = $result->authenticate();
+```
+
+## Installation
 
 ### Composer
 
