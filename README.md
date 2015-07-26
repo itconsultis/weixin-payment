@@ -131,9 +131,9 @@ WeixinJSBridge.invoke('getBrandWCPayRequest', jsbridge_params, function(result) 
 ## Messages
 
 This library represents XML payloads transported between the client and the
-WeChat web service as *messages*. A `Message` is an object that provides uniform
-key/value access to the underlying data structure. More importantly it exposes
-a dead-simple interface for signing and signature verification.
+WeChat web service as *messages*. A [Message](https://github.com/itconsultis/weixin-payment/blob/master/src/ITC/Weixin/Payment/Contracts/Message.php)
+is an object that provides uniform key/value access to the underlying data structure.
+More importantly it exposes a dead-simple signing and signature verification interface.
 
 ```php
 $message = $client->createMessage(['foo'=>1, 'bar'=>'two']);
