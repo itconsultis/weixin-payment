@@ -1,6 +1,6 @@
 # weixin-payment
 
-A pain-free PHP client library for WeChat payments
+A pain-free WeChat payment client library for PHP 5.5+
 
 ## What it does
 
