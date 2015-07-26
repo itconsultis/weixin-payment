@@ -1,6 +1,8 @@
 # weixin-payment
 
-A sane PHP client for WeChat payments.
+A pain-free WeChat payment client library for PHP 5.5+
+
+[![Build Status](https://travis-ci.org/itconsultis/weixin-payment.svg?branch=master)](https://travis-ci.org/itconsultis/weixin-payment)
 
 ## What it does
 
@@ -75,60 +77,76 @@ WeixinJSBridge.invoke('getBrandWCPayRequest', jsbridge_params, function(result) 
 - `pay/orderquery` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_2&index=4) (NOT IMPLEMENTED)
 
     ```php
-    $result = $client->command('pay/orderquery')->execute([
-        // ...
-    ]);
+    $result = $client->command('pay/orderquery')->execute([/* ... */]);
     ```
 
 - `pay/closeorder` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_3&index=5) (NOT IMPLEMENTED)
 
     ```php
-    $result = $client->command('pay/closeorder')->execute([
-        // ...
-    ]);
+    $result = $client->command('pay/closeorder')->execute([/* ... */]);
     ```
 
 - `secapi/refund` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_4&index=6) (NOT IMPLEMENTED)
 
     ```php
-    $result = $client->command('secapi/refund')->execute([
-        // ...
-    ]);
+    $result = $client->command('secapi/refund')->execute([/* ... */]);
     ```
 
 - `pay/refundquery` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_5&index=7) (NOT IMPLEMENTED)
 
     ```php
-    $result = $client->command('pay/refundquery')->execute([
-        // ...
-    ]);
+    $result = $client->command('pay/refundquery')->execute([/* ... */]);
     ```
 
 - `pay/downloadbill` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_6&index=8) (NOT IMPLEMENTED)
 
     ```php
-    $result = $client->command('pay/downloadbill')->execute([
-        // ...
-    ]);
+    $result = $client->command('pay/downloadbill')->execute([/* ... */]);
     ```
 
 - `payitil/report` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_8&index=9) (NOT IMPLEMENTED)
 
     ```php
-    $result = $client->command('payitil/report')->execute([
-        // ...
-    ]);
+    $result = $client->command('payitil/report')->execute([/* ... */]);
     ```
 
 - `tools/shorturl` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_9&index=10) (NOT IMPLEMENTED)
 
     ```php
-    $result = $client->command('tools/shorturl')->execute([
-        // ...
-    ]);
+    $result = $client->command('tools/shorturl')->execute([/* ... */]);
     ```
 
-## How to install the package
+## Messages
+
+This library represents XML payloads transported between the client and the
+WeChat web service as *messages*. A [Message](https://github.com/itconsultis/weixin-payment/blob/master/src/ITC/Weixin/Payment/Contracts/Message.php)
+is an object that provides uniform key/value access to the underlying data structure.
+More importantly it exposes a dead-simple signing and signature verification interface.
+
+```php
+$message = $client->createMessage(['foo'=>1, 'bar'=>'two']);
+
+// authenticate an unsigned message; returns boolean false
+$message->authenticate(); 
+
+// sign the message
+$message->sign();
+
+// authenticate a signed message; returns boolean true
+$message->authenticate();
+```
+
+When you execute a command, you are actually getting back a `Message` that
+can be authenticated at any time.
+
+```php
+$result = $client->command('pay/unifiedorder')->execute([/* ... */]);
+
+// boolean true or false
+$authentic = $result->authenticate();
+```
+
+## Installation
 
 ### Composer
 
@@ -147,15 +165,12 @@ Then publish the package configuration via:
 
     php artisan vendor:publish
 
-This publishes a configuration file in `config/weixin-payment.php`.
-
-You can obtain the client instance using the service container:
+Now you can access the client instance via dependency injection or through the
+service container:
 
 ```php
 $client = App::make('ITC\Weixin\Payment\Contracts\Client');
 ```
-
-As usual, you can also take advantage of dependency injection.
 
 ## Contributing
 

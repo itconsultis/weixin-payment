@@ -80,6 +80,14 @@ class MessageTest extends TestCase {
         $this->assertFalse($message->authenticate());        
     }
 
+    public function test_fails_if_unsigned_message_authenticates()
+    {
+        $message = $this->message;
+        $message->clear('sign');
+
+        $this->assertFalse($message->authenticate());
+    }
+
     public function test_JsonSerializable_interface()
     {
         $data = [
