@@ -43,9 +43,20 @@ $result = $client->command('pay/unifiedorder')->execute([
 // if a prepay_id is in the Message, the payment is ready to execute
 if ($prepay_id = $result->get('prepay_id')
 {
-    // jsapize() returns a JSON-serializable structure
+    // jsapize() returns a JsonSerializable object
     $jsbridge_params = $client->jsapize(['prepay_id'=>$prepay_id]);
 }
+```
+
+The `$jsbridge_params` object can then be JSON-serialized and supplied directly
+to the `WeixinJSBridge` global in the Javascript space. Here's an example:
+
+```javascript
+var jsbridge_params = <?php echo json_encode($jsbridge_params) ?>;
+
+WeixinJSBridge.invoke('getBrandWCPayRequest', jsbridge_params, function(result) {
+    // do something with the result
+});
 ```
 
 ## Commands
@@ -64,7 +75,7 @@ if ($prepay_id = $result->get('prepay_id')
 - `pay/orderquery` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_2&index=4) (NOT IMPLEMENTED)
 
     ```php
-    $result = $client->command->execute('pay/orderquery')->execute([
+    $result = $client->command('pay/orderquery')->execute([
         // ...
     ]);
     ```
@@ -72,7 +83,7 @@ if ($prepay_id = $result->get('prepay_id')
 - `pay/closeorder` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_3&index=5) (NOT IMPLEMENTED)
 
     ```php
-    $result = $client->command->execute('pay/closeorder')->execute([
+    $result = $client->command('pay/closeorder')->execute([
         // ...
     ]);
     ```
@@ -80,7 +91,7 @@ if ($prepay_id = $result->get('prepay_id')
 - `secapi/refund` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_4&index=6) (NOT IMPLEMENTED)
 
     ```php
-    $result = $client->command->execute('secapi/refund')->execute([
+    $result = $client->command('secapi/refund')->execute([
         // ...
     ]);
     ```
@@ -88,7 +99,7 @@ if ($prepay_id = $result->get('prepay_id')
 - `pay/refundquery` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_5&index=7) (NOT IMPLEMENTED)
 
     ```php
-    $result = $client->command->execute('pay/refundquery')->execute([
+    $result = $client->command('pay/refundquery')->execute([
         // ...
     ]);
     ```
@@ -96,7 +107,7 @@ if ($prepay_id = $result->get('prepay_id')
 - `pay/downloadbill` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_6&index=8) (NOT IMPLEMENTED)
 
     ```php
-    $result = $client->command->execute('pay/downloadbill')->execute([
+    $result = $client->command('pay/downloadbill')->execute([
         // ...
     ]);
     ```
@@ -104,7 +115,7 @@ if ($prepay_id = $result->get('prepay_id')
 - `payitil/report` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_8&index=9) (NOT IMPLEMENTED)
 
     ```php
-    $result = $client->command->execute('payitil/report')->execute([
+    $result = $client->command('payitil/report')->execute([
         // ...
     ]);
     ```
@@ -112,7 +123,7 @@ if ($prepay_id = $result->get('prepay_id')
 - `tools/shorturl` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_9&index=10) (NOT IMPLEMENTED)
 
     ```php
-    $result = $client->command->execute('tools/shorturl')->execute([
+    $result = $client->command('tools/shorturl')->execute([
         // ...
     ]);
     ```
