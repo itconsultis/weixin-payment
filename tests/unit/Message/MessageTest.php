@@ -11,12 +11,12 @@ class MessageTest extends TestCase {
     public function setUp()
     {
         $this->hashgen = Mockery::mock(HashGeneratorInterface::class);
-        $this->message = new Message([], $this->hashgen);
+        $this->message = new Message($this->hashgen);
     }
 
     public function test_attribute_assignment_via_constructor()
     {
-        $message = new Message(['foo'=>1, 'bar'=>'two'], $this->hashgen);
+        $message = new Message($this->hashgen, ['foo'=>1, 'bar'=>'two']);
 
         $this->assertSame(1, $message->get('foo'));
         $this->assertSame('two', $message->get('bar'));
@@ -62,6 +62,22 @@ class MessageTest extends TestCase {
         $this->assertEquals('MESSAGE_SIGNATURE', $message->get('sign'));
     }
 
+    public function test_passes_if_signing_is_idemptotent()
+    {
+        $message = $this->message;
+        $hashgen = $this->hashgen;
+
+        $hashgen->shouldReceive('hash')->andReturn('MESSAGE_SIGNATURE');
+
+        $message->sign();
+        $data1 = $message->toArray();
+
+        $message->sign();
+        $data2 = $message->toArray();
+
+        $this->assertEquals($data1, $data2);
+    }
+
     public function test_authentication()
     {
         $message = $this->message;
@@ -80,13 +96,31 @@ class MessageTest extends TestCase {
         $this->assertFalse($message->authenticate());        
     }
 
-    public function test_fails_if_unsigned_message_authenticates()
+    public function test_fails_if_unsigned_message_passes_authentication()
     {
         $message = $this->message;
         $message->clear('sign');
 
         $this->assertFalse($message->authenticate());
     }
+
+    public function test_fails_if_invalid_signature_passes_authentication()
+    {
+        $message = $this->message;
+        $message->set('foo', 1);
+
+        $hashgen = $this->hashgen;
+        $hashgen->shouldReceive('hash')->withArgs([$message->toArray()])->andReturn('MESSAGE_SIGNATURE');
+
+        $message->sign();
+
+        $signature = $message->get('sign');
+
+        $message->set('sign', 'INVALID_'.$signature);
+
+        $this->assertFalse($message->authenticate());
+    }
+
 
     public function test_JsonSerializable_interface()
     {
@@ -97,8 +131,8 @@ class MessageTest extends TestCase {
             'sign' => 'REQUEST_SIGNATURE',
         ];
 
-        $message = new Message($data, $this->hashgen);
-        $message->setPackageQuery(['prepay_id'=>'PREPAY_ID']);
+        $message = new Message($this->hashgen, $data);
+        $message->set('package', ['prepay_id'=>'PREPAY_ID']);
 
         $payload = $message->jsonSerialize();
 
@@ -113,4 +147,20 @@ class MessageTest extends TestCase {
 
         $this->assertJsonStringEqualsJsonString(json_encode($payload), $json);
     }
+
+    public function test_array_attribute_query_stringification_behavior()
+    {
+        $message = new Message($this->hashgen, ['package'=>['prepay_id'=>12345]]);
+        $this->assertEquals('prepay_id=12345', $message->get('package'));
+
+        $message->set('package', ['foo'=>1, 'bar'=>'two']);
+        $this->assertEquals('foo=1&bar=two', $message->get('package'));
+    }
+
+    public function test_fails_if_query_stringified_value_is_url_encoded()
+    {
+        $message = new Message($this->hashgen, ['package'=>['wtf'=>'this value contains whitespace']]);
+        $this->assertEquals('wtf=this value contains whitespace', $message->get('package'));
+    }
+
 }

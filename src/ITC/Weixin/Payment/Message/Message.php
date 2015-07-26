@@ -12,13 +12,17 @@ class Message implements MessageInterface {
     private $data = [];
 
     /**
-     * @param array $data
      * @param ITC\Weixin\Payment\Contracts\HashGenerator $hashgen
+     * @param array $data
      */
-    public function __construct($data=[], HashGeneratorInterface $hashgen)
+    public function __construct(HashGeneratorInterface $hashgen, array $data=null)
     {
-        $this->data = (array) $data;
         $this->hashgen = $hashgen;
+
+        foreach ((array) $data as $attr => $value)
+        {
+            $this->set($attr, $value);
+        }
     }
 
     /**
@@ -37,6 +41,10 @@ class Message implements MessageInterface {
      */
     public function set($attr, $value)
     {
+        if (is_array($value))
+        {
+            $value = $this->createPseudoQuery($value);
+        }
         $this->data[$attr] = $value;
     }
 
@@ -65,27 +73,15 @@ class Message implements MessageInterface {
      */
     public function authenticate()
     {
-        if ($actual = $this->get('sign'))
+        if ($signature = $this->get('sign'))
         {
             $data = $this->data;
-
             unset($data['sign']);
 
-            $expected = $this->hashgen->hash($data);
-
-            return $actual === $expected;
+            return $signature === $this->hashgen->hash($data);
         }
 
         return false;
-    }
-
-    /**
-     * @param array $query
-     * @return void
-     */
-    public function setPackageQuery(array $query)
-    {
-        $this->set('package', http_build_query($query));
     }
 
     /**
@@ -129,6 +125,24 @@ class Message implements MessageInterface {
         $payload['signType'] = 'MD5';
 
         return $payload;
+    }
+
+    /**
+     * {i: 'am', not: 'url encoded'}  -> "i=am&not=url encoded"
+     * 
+     * @param array $data
+     * @return string
+     */
+    private function createPseudoQuery(array $data)
+    {
+        $tokens = [];
+
+        foreach ($data as $key => $value)
+        {
+            $tokens[] = $key .'='. $value;
+        }
+
+        return implode('&', $tokens);
     }
 
 }

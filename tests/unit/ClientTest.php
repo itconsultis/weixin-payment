@@ -211,4 +211,44 @@ class ClientTest extends TestCase {
         $this->fail();
     }
 
+    public function test_unstubbed_getSerializer()
+    {
+        $serializer = $this->createActualClient()->getSerializer();
+        $this->assertTrue($serializer instanceof SerializerInterface);
+    }
+
+    public function test_unstubbed_getHashGenerator()
+    {
+        $hashgen = $this->createActualClient()->getHashGenerator();
+        $this->assertTrue($hashgen instanceof HashGeneratorInterface);
+    }
+
+    public function test_unstubbed_getHttpClient()
+    {
+        $http = $this->createActualClient()->getHttpClient();
+        $this->assertTrue($http instanceof HttpClientInterface);
+    }
+
+    public function test_unstubbed_getLogger()
+    {
+        $logger = $this->createActualClient()->getLogger();
+        $this->assertTrue($logger instanceof LoggerInterface);
+    }
+
+    /**
+     * Create a Client instance without any stubbed dependencies
+     * @param void
+     * @return Client
+     */
+    private function createActualClient()
+    {
+        return new Client([
+            'app_id' => $this->app_id,
+            'mch_id' => $this->mch_id,
+            'secret' => $this->secret,
+            'public_key_path' => '/path/to/public/key',
+            'private_key_path' => '/path/to/private/key',
+        ]);
+    }
+
 }
