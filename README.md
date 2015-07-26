@@ -8,7 +8,7 @@ A pain-free WeChat payment client library for PHP 5.5+
 
 The client exposes a clean interface to WeChat's payment-related web service
 calls. It transparently handles boilerplate stuff like request signing and XML
-serialization so you can focus on the important stuff.
+serialization so you can focus on more important things.
 
 ## What it does NOT do
 
