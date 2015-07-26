@@ -28,16 +28,6 @@ class CreateUnifiedOrder extends Command {
     }
 
     /**
-     * Satisfies ITC\Weixin\Payment\Command\Command#getDefaultUrl
-     * @param void
-     * @return string
-     */
-    protected function getDefaultUrl()
-    {
-        return 'https://api.mch.weixin.qq.com/pay/unifiedorder';
-    }
-
-    /**
      * Satisfies ITC\Weixin\Payment\Command\Command#getRequiredParams
      * @param void
      * @return array

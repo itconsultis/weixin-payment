@@ -10,12 +10,6 @@ abstract class Command implements CommandInterface {
     protected $client;
 
     /**
-     * @param void
-     * @return string
-     */
-    abstract protected function getDefaultUrl();
-
-    /**
      * @param array $params
      * @param array $errors
      * @return void
@@ -41,6 +35,15 @@ abstract class Command implements CommandInterface {
     }
 
     /**
+     * @param void
+     * @return string
+     */
+    protected function getDefaultUrl()
+    {
+        return 'https://api.mch.weixin.qq.com/' . $this->name();
+    }
+
+    /**
      * Satisfies ITC\Weixin\Payment\Contracts\Command#setUrl
      * @param string $url
      * @return void
@@ -59,7 +62,7 @@ abstract class Command implements CommandInterface {
     {
         if (!$this->url)
         {
-            return $this->getDefaultUrl();
+            $this->url = $this->getDefaultUrl();
         }
         return $this->url;
     }
