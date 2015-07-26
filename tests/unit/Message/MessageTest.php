@@ -157,4 +157,10 @@ class MessageTest extends TestCase {
         $this->assertEquals('foo=1&bar=two', $message->get('package'));
     }
 
+    public function test_fails_if_query_stringified_value_is_url_encoded()
+    {
+        $message = new Message($this->hashgen, ['package'=>['wtf'=>'this value contains whitespace']]);
+        $this->assertEquals('wtf=this value contains whitespace', $message->get('package'));
+    }
+
 }

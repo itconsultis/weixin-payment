@@ -235,6 +235,11 @@ class ClientTest extends TestCase {
         $this->assertTrue($logger instanceof LoggerInterface);
     }
 
+    /**
+     * Create a Client instance without any stubbed dependencies
+     * @param void
+     * @return Client
+     */
     private function createActualClient()
     {
         return new Client([
