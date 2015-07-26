@@ -2,7 +2,7 @@
 
 A pain-free WeChat payment client library for PHP 5.5+
 
-![develop](https://travis-ci.org/itconsultis/weixin-payment.svg?branch=develop)
+[![Build Status](https://travis-ci.org/itconsultis/weixin-payment.svg?branch=master)](https://travis-ci.org/itconsultis/weixin-payment)
 
 ## What it does
 
