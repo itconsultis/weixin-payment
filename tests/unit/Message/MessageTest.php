@@ -62,6 +62,22 @@ class MessageTest extends TestCase {
         $this->assertEquals('MESSAGE_SIGNATURE', $message->get('sign'));
     }
 
+    public function test_passes_if_signing_is_idemptotent()
+    {
+        $message = $this->message;
+        $hashgen = $this->hashgen;
+
+        $hashgen->shouldReceive('hash')->andReturn('MESSAGE_SIGNATURE');
+
+        $message->sign();
+        $data1 = $message->toArray();
+
+        $message->sign();
+        $data2 = $message->toArray();
+
+        $this->assertEquals($data1, $data2);
+    }
+
     public function test_authentication()
     {
         $message = $this->message;
@@ -80,13 +96,31 @@ class MessageTest extends TestCase {
         $this->assertFalse($message->authenticate());        
     }
 
-    public function test_fails_if_unsigned_message_authenticates()
+    public function test_fails_if_unsigned_message_passes_authentication()
     {
         $message = $this->message;
         $message->clear('sign');
 
         $this->assertFalse($message->authenticate());
     }
+
+    public function test_fails_if_invalid_signature_passes_authentication()
+    {
+        $message = $this->message;
+        $message->set('foo', 1);
+
+        $hashgen = $this->hashgen;
+        $hashgen->shouldReceive('hash')->withArgs([$message->toArray()])->andReturn('MESSAGE_SIGNATURE');
+
+        $message->sign();
+
+        $signature = $message->get('sign');
+
+        $message->set('sign', 'INVALID_'.$signature);
+
+        $this->assertFalse($message->authenticate());
+    }
+
 
     public function test_JsonSerializable_interface()
     {

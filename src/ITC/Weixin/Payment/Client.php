@@ -185,7 +185,7 @@ class Client implements ClientInterface {
      * @param string $url
      * @param ITC\Weixin\Payment\Contracts\Message $message
      * @param Psr\Http\Message\ResponseInterface $response
-     * @return array
+     * @return ITC\Weixin\Payment\Contracts\Message
      */
     public function post($url, MessageInterface $message, HttpResponseInterface &$response=null)
     {
