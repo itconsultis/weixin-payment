@@ -1,6 +1,7 @@
 <?php namespace ITC\Weixin\Payment\Test;
 
 use Mockery;
+use JsonSerializable;
 use Psr\Log\LoggerInterface;
 use GuzzleHttp\ClientInterface as HttpClientInterface;
 use ITC\Weixin\Payment\Contracts\Serializer as SerializerInterface;
@@ -128,6 +129,22 @@ class ClientTest extends TestCase {
         $create_unified_order = $client->command('pay/unifiedorder');
 
         $this->assertTrue($create_unified_order instanceof CreateUnifiedOrder);
+    }
+
+    public function test_jsapize()
+    {
+        $query = ['prepay_id'=>'PREPAY_ID', 'foo'=>1, 'bar'=>'two'];
+        $timestamp = 10000000;
+        $nonce = 'NONCE';
+
+        $this->hashgen->shouldReceive('hash')->andReturn('MESSAGE_SIGNATURE');
+
+        $jsapi_params = $this->client->jsapize($query, $nonce, $timestamp);
+        $this->assertTrue($jsapi_params instanceof JsonSerializable);
+print_r($jsapi_params->jsonSerialize());
+        $expected = '{"package":"prepay_id=PREPAY_ID&foo=1&bar=two","mch_id":"WEIXIN_MERCHANT_ID","appId":"WEIXIN_APP_ID","nonceStr":"NONCE","paySign":"MESSAGE_SIGNATURE","signType":"MD5","timeStamp":10000000}';
+        $actual = json_encode($jsapi_params);
+        $this->assertJsonStringEqualsJsonString($expected, $actual);
     }
 
 }

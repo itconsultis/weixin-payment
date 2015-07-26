@@ -259,10 +259,13 @@ class Client implements ClientInterface {
      * @param array $query
      * @return JsonSerializable
      */
-    public function jsapize(array $query)
+    public function jsapize(array $query, $nonce=null, $timestamp=null)
     {
         $message = $this->createMessage();
-        $message->setPackageQuery($package_query);
+        $message->setPackageQuery($query);
+
+        $nonce && $message->set('nonce_str', $nonce);
+        $timestamp && $message->set('timestamp', $timestamp);
 
         $this->prepare($message);
 

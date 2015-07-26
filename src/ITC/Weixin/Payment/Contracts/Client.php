@@ -46,8 +46,10 @@ interface Client extends MessageFactory {
 
     /**
      * @param array $query
+     * @param string $nonce - optional
+     * @param integer $timestamp - optional
      * @return JsonSerializable
      */
-    public function jsapize(array $query);
+    public function jsapize(array $query, $nonce=null, $timestamp=null);
 
 }

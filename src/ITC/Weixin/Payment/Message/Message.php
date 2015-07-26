@@ -15,9 +15,9 @@ class Message implements MessageInterface {
      * @param array $data
      * @param ITC\Weixin\Payment\Contracts\HashGenerator $hashgen
      */
-    public function __construct(array $data=[], HashGeneratorInterface $hashgen)
+    public function __construct($data=[], HashGeneratorInterface $hashgen)
     {
-        $this->data = $data;
+        $this->data = (array) $data;
         $this->hashgen = $hashgen;
     }
 
@@ -105,6 +105,11 @@ class Message implements MessageInterface {
     {
         $payload = $this->data;
 
+        if (!isset($payload['timestamp']))
+        {
+            $payload['timestamp'] = time();
+        }
+
         $key_rewrites = [
             'appid' => 'appId',
             'nonce_str' => 'nonceStr',
@@ -122,7 +127,6 @@ class Message implements MessageInterface {
         }
 
         $payload['signType'] = 'MD5';
-        $payload['timeStamp'] = time();
 
         return $payload;
     }
