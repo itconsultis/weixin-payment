@@ -67,8 +67,10 @@ class Message implements MessageInterface {
     {
         if ($actual = $this->get('sign'))
         {
-            $data = $this->toArray();
+            $data = $this->data;
+
             unset($data['sign']);
+
             $expected = $this->hashgen->hash($data);
 
             return $actual === $expected;

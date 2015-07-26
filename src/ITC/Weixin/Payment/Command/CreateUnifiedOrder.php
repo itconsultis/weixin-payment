@@ -9,7 +9,7 @@ class CreateUnifiedOrder extends Command {
      */
     public function name()
     {
-        return 'create-unified-order';
+        return 'pay/unifiedorder';
     }
 
     /**

@@ -10,6 +10,8 @@ use ITC\Weixin\Payment\Contracts\Client as ClientInterface;
 use ITC\Weixin\Payment\Contracts\Message as MessageInterface;
 use ITC\Weixin\Payment\Client;
 
+use ITC\Weixin\Payment\Command\CreateUnifiedOrder;
+
 class ClientTest extends TestCase {
 
     public function setUp()
@@ -111,6 +113,21 @@ class ClientTest extends TestCase {
         $this->assertSame(1, $response_message->get('foo'));
         $this->assertSame('two', $response_message->get('bar'));
         $this->assertSame('RESPONSE_MESSAGE_SIGNATURE', $response_message->get('sign'));
+    }
+
+    public function test_access_to_autoregistered_commands()
+    {
+        $client = Client::instance([
+            'app_id' => 'WEIXIN_APP_ID',
+            'mch_id' => 'WEIXIN_MERCHANT_ID',
+            'secret' => 'WEIXIN_HASH_SECRET',
+            'public_key_path' => '/path/to/public/key',
+            'private_key_path' => '/path/to/private/key',
+        ]);
+
+        $create_unified_order = $client->command('pay/unifiedorder');
+
+        $this->assertTrue($create_unified_order instanceof CreateUnifiedOrder);
     }
 
 }

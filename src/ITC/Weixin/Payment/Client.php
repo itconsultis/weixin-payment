@@ -37,7 +37,6 @@ class Client implements ClientInterface {
         $client = new static($config);
 
         $client->register(new Command\CreateUnifiedOrder());
-        $client->register(new Command\CreateJavascriptParameters());
 
         return $client;
     }
@@ -191,7 +190,7 @@ class Client implements ClientInterface {
         $log = $this->getLogger();
         $serializer = $this->getSerializer();
 
-        $this->prepareOutboundMessage($message);
+        $this->prepare($message);
 
         $reqbody = $serializer->serialize($message->toArray());
 
@@ -244,15 +243,30 @@ class Client implements ClientInterface {
     }
 
     /**
+     * Prepares a message for outbound transport
      * @param ITC\Weixin\Payment\Contracts\Message $message
      * @return void
      */
-    public function prepareOutboundMessage(MessageInterface $message)
+    private function prepare(MessageInterface $message)
     {
         $message->set('appid', $this->app_id);
         $message->set('mch_id', $this->mch_id);
         $message->get('nonce_str') || $message->set('nonce_str', static::uuid());
         $message->sign();
+    }
+
+    /**
+     * @param array $query
+     * @return JsonSerializable
+     */
+    public function jsapize(array $query)
+    {
+        $message = $this->createMessage();
+        $message->setPackageQuery($package_query);
+
+        $this->prepare($message);
+
+        return $message;
     }
 
     /**
