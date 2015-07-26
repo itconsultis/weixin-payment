@@ -41,7 +41,11 @@ class Message implements MessageInterface {
      */
     public function set($attr, $value)
     {
-        $this->data[$attr] = is_array($value) ? http_build_query($value) : $value;
+        if (is_array($value))
+        {
+            $value = $this->createPseudoQuery($value);
+        }
+        $this->data[$attr] = $value;
     }
 
     /**
@@ -69,15 +73,12 @@ class Message implements MessageInterface {
      */
     public function authenticate()
     {
-        if ($actual = $this->get('sign'))
+        if ($signature = $this->get('sign'))
         {
             $data = $this->data;
-
             unset($data['sign']);
 
-            $expected = $this->hashgen->hash($data);
-
-            return $actual === $expected;
+            return $signature === $this->hashgen->hash($data);
         }
 
         return false;
@@ -124,6 +125,24 @@ class Message implements MessageInterface {
         $payload['signType'] = 'MD5';
 
         return $payload;
+    }
+
+    /**
+     * {i: 'am', not: 'url encoded'}  -> "i=am&not=url encoded"
+     * 
+     * @param array $data
+     * @return string
+     */
+    private function createPseudoQuery(array $data)
+    {
+        $tokens = [];
+
+        foreach ($data as $key => $value)
+        {
+            $tokens[] = $key .'='. $value;
+        }
+
+        return implode('&', $tokens);
     }
 
 }
