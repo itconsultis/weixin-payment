@@ -256,12 +256,13 @@ class Client implements ClientInterface {
     public function jsapize(array $query, $nonce=null, $timestamp=null)
     {
         $message = $this->createMessage();
+
+        $message->set('appId', $this->app_id);
+        $message->set('nonceStr', ($nonce ? $nonce : static::nonce()));
+        $message->set('timeStamp', ($timestamp ? $timestamp : time()));
         $message->set('package', $query);
-
-        $nonce && $message->set('nonce_str', $nonce);
-        $timestamp && $message->set('timestamp', $timestamp);
-
-        $this->prepare($message);
+        $message->set('signType', 'MD5');
+        $message->set('paySign', $this->hashgen->hash($message->toArray()));
 
         return $message;
     }

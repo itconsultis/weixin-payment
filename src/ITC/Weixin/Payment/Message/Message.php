@@ -99,32 +99,7 @@ class Message implements MessageInterface {
      */
     public function jsonSerialize()
     {
-        $payload = $this->data;
-
-        if (!isset($payload['timestamp']))
-        {
-            $payload['timestamp'] = time();
-        }
-
-        $key_rewrites = [
-            'appid' => 'appId',
-            'nonce_str' => 'nonceStr',
-            'sign' => 'paySign',
-            'timestamp' => 'timeStamp',
-        ];
-
-        foreach ($key_rewrites as $from => $to)
-        {
-            if (isset($payload[$from]))
-            {
-                $payload[$to] = $payload[$from];
-                unset($payload[$from]);
-            }
-        }
-
-        $payload['signType'] = 'MD5';
-
-        return $payload;
+        return $this->data;
     }
 
     /**

@@ -179,7 +179,7 @@ class ClientTest extends TestCase {
         $jsapi_params = $this->client->jsapize($query, $nonce, $timestamp);
         $this->assertTrue($jsapi_params instanceof JsonSerializable);
 
-        $expected = '{"package":"prepay_id=PREPAY_ID&foo=1&bar=two","mch_id":"WEIXIN_MERCHANT_ID","appId":"WEIXIN_APP_ID","nonceStr":"NONCE","paySign":"MESSAGE_SIGNATURE","signType":"MD5","timeStamp":10000000}';
+        $expected = '{"package":"prepay_id=PREPAY_ID&foo=1&bar=two","appId":"WEIXIN_APP_ID","nonceStr":"NONCE","paySign":"MESSAGE_SIGNATURE","signType":"MD5","timeStamp":10000000}';
         $actual = json_encode($jsapi_params);
         $this->assertJsonStringEqualsJsonString($expected, $actual);
     }
