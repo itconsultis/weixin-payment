@@ -5,6 +5,7 @@ use Mockery;
 use ITC\Weixin\Payment\Contracts\HashGenerator as HashGeneratorInterface;
 use ITC\Weixin\Payment\Contracts\Message as MessageInterface;
 use ITC\Weixin\Payment\Message\Message;
+use ITC\Weixin\Payment\HashGenerator;
 
 class MessageTest extends TestCase {
 
@@ -122,32 +123,6 @@ class MessageTest extends TestCase {
     }
 
 
-    public function test_JsonSerializable_interface()
-    {
-        $data = [
-            'appid' => 'WEIXIN_APP_ID',
-            'nonce_str' => 'NONCE',
-            'mch_id' => 'WEIXIN_MERCHANT_ID',
-            'sign' => 'REQUEST_SIGNATURE',
-        ];
-
-        $message = new Message($this->hashgen, $data);
-        $message->set('package', ['prepay_id'=>'PREPAY_ID']);
-
-        $payload = $message->jsonSerialize();
-
-        $this->assertEquals($data['appid'], $payload['appId']);
-        $this->assertEquals($data['nonce_str'], $payload['nonceStr']);
-        $this->assertTrue(isset($payload['timeStamp']) && is_numeric($payload['timeStamp']));
-        $this->assertEquals('prepay_id=PREPAY_ID', $payload['package']);
-        $this->assertEquals($data['sign'], $payload['paySign']);
-        $this->assertEquals('MD5', $payload['signType']);
-
-        $json = json_encode($message);
-
-        $this->assertJsonStringEqualsJsonString(json_encode($payload), $json);
-    }
-
     public function test_array_attribute_query_stringification_behavior()
     {
         $message = new Message($this->hashgen, ['package'=>['prepay_id'=>12345]]);
@@ -161,6 +136,23 @@ class MessageTest extends TestCase {
     {
         $message = new Message($this->hashgen, ['package'=>['wtf'=>'this value contains whitespace']]);
         $this->assertEquals('wtf=this value contains whitespace', $message->get('package'));
+    }
+
+    public function test_fails_if_message_is_not_signed_with_reference_signature()
+    {
+        $hash_secret = '192006250b4c09247ec02edce69f6a2d'; 
+
+        $message = new Message(new HashGenerator($hash_secret), [
+            'appid' => 'wxd930ea5d5a258f4f',
+            'mch_id' => '10000100',
+            'device_info' => '1000',
+            'body' => 'test',
+            'nonce_str' => 'ibuaiVcKdpRxkhJA',
+        ]);
+
+        $message->sign();
+
+        $this->assertEquals('9A0A8659F005D6984697E2CA0A9CF3B7', $message->get('sign'));
     }
 
 }
