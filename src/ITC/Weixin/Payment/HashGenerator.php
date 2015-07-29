@@ -16,12 +16,10 @@ class HashGenerator implements HashGeneratorInterface {
 
     /**
      * @param string $hash_secret
-     * @param array $options
      */
-    public function __construct($hash_secret, array $options=[])
+    public function __construct($hash_secret)
     {
         $this->secret = $hash_secret;
-        $this->options = $options;
     }
 
     /**
