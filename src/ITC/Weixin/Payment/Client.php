@@ -259,7 +259,7 @@ class Client implements ClientInterface {
 
         $message->set('appId', $this->app_id);
         $message->set('nonceStr', ($nonce ? $nonce : static::nonce()));
-        $message->set('timeStamp', ($timestamp ? $timestamp : time()));
+        $message->set('timeStamp', (string) ($timestamp ? $timestamp : time()));
         $message->set('package', $query);
         $message->set('signType', 'MD5');
         $message->set('paySign', $this->hashgen->hash($message->toArray()));
