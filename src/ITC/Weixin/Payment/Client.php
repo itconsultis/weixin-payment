@@ -170,7 +170,7 @@ class Client implements ClientInterface {
             $data = $this->getSerializer()->unserialize($data);
         }
 
-        return new Message\Message($this->getHashGenerator(), $data);
+        return new Message\Message($this->getHashGenerator(), (array) $data);
     }
 
     /**
