@@ -242,6 +242,12 @@ class ClientTest extends TestCase {
         $this->assertTrue($logger instanceof LoggerInterface);
     }
 
+    public function test_fails_if_createMessage_raises_exception_given_empty_string()
+    {
+        $message = $this->client->createMessage('');
+        $this->assertTrue($message instanceof MessageInterface);
+    }
+
     /**
      * Create a Client instance without any stubbed dependencies
      * @param void
