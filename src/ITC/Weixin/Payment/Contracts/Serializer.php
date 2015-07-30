@@ -1,6 +1,5 @@
 <?php namespace ITC\Weixin\Payment\Contracts;
 
-
 interface Serializer {
 
     /**
