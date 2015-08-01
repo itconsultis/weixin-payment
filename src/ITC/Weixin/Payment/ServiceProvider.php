@@ -79,6 +79,7 @@ class ServiceProvider extends BaseServiceProvider {
             __DIR__.'/Contracts/Client.php', 
             __DIR__.'/Command/Command.php',
             __DIR__.'/Command/CreateUnifiedOrder.php',
+            __DIR__.'/Command/OrderQuery.php',
             __DIR__.'/DummyLogger.php',
             __DIR__.'/HashGenerator.php',
             __DIR__.'/XmlSerializer.php',
