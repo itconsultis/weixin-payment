@@ -163,9 +163,16 @@ class ClientTest extends TestCase {
             'private_key_path' => '/path/to/private/key',
         ]);
 
-        $create_unified_order = $client->command('pay/unifiedorder');
+        $commands = [
+            'pay/unifiedorder',
+            'pay/orderquery',
+        ];
 
-        $this->assertTrue($create_unified_order instanceof CreateUnifiedOrder);
+        foreach ($commands as $name)
+        {
+            $command = $client->command($name);
+            $this->assertTrue($command instanceof CommandInterface);
+        }
     }
 
     public function test_jsapize()
