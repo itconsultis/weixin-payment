@@ -1,16 +1,21 @@
 # weixin-payment
 
-A pain-free WeChat payment client library for PHP 5.5+
+WeChat payment client library for PHP 5.5+
 
 [![Build Status](https://travis-ci.org/itconsultis/weixin-payment.svg?branch=master)](https://travis-ci.org/itconsultis/weixin-payment)
 
-## What it does
+## Features
 
-The client exposes a clean interface to WeChat's payment-related web service
-calls. It transparently handles boilerplate stuff like request signing and XML
-serialization so you can focus on more important things.
+- Simple, intuitive programming interface
+- Fully tested
+- [PSR-7](http://www.php-fig.org/psr/psr-7/) compatible
+- [PSR-3](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md) compatible
+- Integrates with [Laravel 5](http://laravel.com)
 
-## What it does NOT do
+## What it does (and doesn't)
+
+The client exposes a simple programming interface to WeChat's payment-related web service calls.
+It transparently handles boilerplate stuff like request signing and XML serialization so you can focus on things that matter.
 
 This package does not perform authentication; it will *not* help you get a user's
 OpenID. Fortunately, there are plenty of other packages that already do this.
@@ -19,7 +24,7 @@ OpenID. Fortunately, there are plenty of other packages that already do this.
 
 ## Usage
 
-#### Obtaining a Client instance
+#### Create a Client instance
 
 ```php
 $client = \ITC\Weixin\Payment\Client::instance([
@@ -31,7 +36,7 @@ $client = \ITC\Weixin\Payment\Client::instance([
 ]);
 ```
 
-#### Starting a payment
+#### Start a payment
 
 ```php
 // execute the "pay/unifiedorder" command; the result is a Message instance
@@ -62,6 +67,12 @@ WeixinJSBridge.invoke('getBrandWCPayRequest', jsbridge_params, function(result) 
 ```
 
 ## Commands
+
+This package abstracts the various web service calls to the payment API as *commands*. A
+[Command](https://github.com/itconsultis/weixin-payment/blob/master/src/ITC/Weixin/Payment/Contracts/Command.php) is an
+object that has an `execute` command that accepts key-value pairs, and returns a `Message`.
+
+
 
 - `pay/unifiedorder` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_1)
 
@@ -128,8 +139,7 @@ WeixinJSBridge.invoke('getBrandWCPayRequest', jsbridge_params, function(result) 
 
 This library represents XML payloads transported between the client and the
 WeChat web service as *messages*. A [Message](https://github.com/itconsultis/weixin-payment/blob/master/src/ITC/Weixin/Payment/Contracts/Message.php)
-is an object that provides uniform key/value access to the underlying data structure.
-More importantly it exposes a dead-simple signing and signature verification interface.
+is a signable, authenticatable object that provides uniform key/value access to its underlying data structure.
 
 ```php
 $message = $client->createMessage(['foo'=>1, 'bar'=>'two']);
