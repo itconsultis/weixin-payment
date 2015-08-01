@@ -47,8 +47,11 @@ $result = $client->command('pay/unifiedorder')->execute([
     'total_fee' => 1000,
 ]);
 
+// authenticate the result
+$authentic = $result->authenticate();
+
 // if a prepay_id is in the Message, the payment is ready to execute
-if ($prepay_id = $result->get('prepay_id')
+if ($authentic && $prepay_id = $result->get('prepay_id'))
 {
     // jsapize() returns a JsonSerializable object
     $jsbridge_params = $client->jsapize(['prepay_id'=>$prepay_id]);
@@ -70,7 +73,7 @@ WeixinJSBridge.invoke('getBrandWCPayRequest', jsbridge_params, function(result) 
 
 This package abstracts the various web service calls to the payment API as *commands*. A
 [Command](https://github.com/itconsultis/weixin-payment/blob/master/src/ITC/Weixin/Payment/Contracts/Command.php) is an
-object that has an `execute` command that accepts key-value pairs, and returns a `Message`.
+object that has an `execute` method that accepts key-value pairs, and returns a `Message`.
 
 
 
