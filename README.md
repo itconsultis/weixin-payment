@@ -22,8 +22,6 @@ OpenID. Fortunately, there are plenty of other packages that already do this.
 #### Obtaining a Client instance
 
 ```php
-<?php
-
 $client = \ITC\Weixin\Payment\Client::instance([
     'app_id' => 'your appid',
     'secret' => 'your signing secret',
@@ -36,8 +34,6 @@ $client = \ITC\Weixin\Payment\Client::instance([
 #### Starting a payment
 
 ```php
-<?php
-
 // execute the "pay/unifiedorder" command; the result is a Message instance
 $result = $client->command('pay/unifiedorder')->execute([
     'openid' => 'wx_9f8a98g9a8geag0',
@@ -70,8 +66,6 @@ WeixinJSBridge.invoke('getBrandWCPayRequest', jsbridge_params, function(result) 
 - `pay/unifiedorder` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_1)
 
     ```php
-    <?php
-
     $result = $client->command('pay/unifiedorder')->execute([
         'openid' => 'wx_9f8a98g9a8geag0',
         'trade_type' => 'JSAPI',
@@ -83,8 +77,6 @@ WeixinJSBridge.invoke('getBrandWCPayRequest', jsbridge_params, function(result) 
 - `pay/orderquery` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_2&index=4)
 
     ```php
-    <?php
-
     $result = $client->command('pay/orderquery')->execute([
         'transaction_id' => '1008450740201411110005820873' 
     ]);
@@ -99,48 +91,36 @@ WeixinJSBridge.invoke('getBrandWCPayRequest', jsbridge_params, function(result) 
 - `pay/closeorder` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_3&index=5) (NOT IMPLEMENTED)
 
     ```php
-    <?php
-
     $result = $client->command('pay/closeorder')->execute([/* ... */]);
     ```
 
 - `secapi/refund` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_4&index=6) (NOT IMPLEMENTED)
 
     ```php
-    <?php
-
     $result = $client->command('secapi/refund')->execute([/* ... */]);
     ```
 
 - `pay/refundquery` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_5&index=7) (NOT IMPLEMENTED)
 
     ```php
-    <?php
-
     $result = $client->command('pay/refundquery')->execute([/* ... */]);
     ```
 
 - `pay/downloadbill` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_6&index=8) (NOT IMPLEMENTED)
 
     ```php
-    <?php
-
     $result = $client->command('pay/downloadbill')->execute([/* ... */]);
     ```
 
 - `payitil/report` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_8&index=9) (NOT IMPLEMENTED)
 
     ```php
-    <?php
-
     $result = $client->command('payitil/report')->execute([/* ... */]);
     ```
 
 - `tools/shorturl` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_9&index=10) (NOT IMPLEMENTED)
 
     ```php
-    <?php
-
     $result = $client->command('tools/shorturl')->execute([/* ... */]);
     ```
 
@@ -152,8 +132,6 @@ is an object that provides uniform key/value access to the underlying data struc
 More importantly it exposes a dead-simple signing and signature verification interface.
 
 ```php
-<?php
-
 $message = $client->createMessage(['foo'=>1, 'bar'=>'two']);
 
 // authenticate an unsigned message; returns boolean false
@@ -170,8 +148,6 @@ When you execute a command, you are actually getting back a `Message` that
 can be authenticated at any time.
 
 ```php
-<?php
-
 $result = $client->command('pay/unifiedorder')->execute([/* ... */]);
 
 // boolean true or false
@@ -201,8 +177,6 @@ Now you can access the client instance via dependency injection or through the
 service container:
 
 ```php
-<?php
-
 $client = App::make('ITC\Weixin\Payment\Contracts\Client');
 ```
 
