@@ -80,12 +80,20 @@ WeixinJSBridge.invoke('getBrandWCPayRequest', jsbridge_params, function(result) 
     ]);
     ```
 
-- `pay/orderquery` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_2&index=4) (NOT IMPLEMENTED)
+- `pay/orderquery` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_2&index=4)
 
     ```php
     <?php
 
-    $result = $client->command('pay/orderquery')->execute([/* ... */]);
+    $result = $client->command('pay/orderquery')->execute([
+        'transaction_id' => '1008450740201411110005820873' 
+    ]);
+
+    // or supply out_trade_no
+
+    $result = $client->command('pay/orderquery')->execute([
+        'out_trade_no' => 'domain-order-id' 
+    ]);
     ```
 
 - `pay/closeorder` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_3&index=5) (NOT IMPLEMENTED)
