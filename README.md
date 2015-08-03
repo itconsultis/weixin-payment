@@ -7,10 +7,11 @@ WeChat payment client library for PHP 5.5+
 ## Features
 
 - Simple, intuitive programming interface
-- Fully tested
+- Composer-friendly; just install the package and go!
 - [PSR-7](http://www.php-fig.org/psr/psr-7/) compatible
 - [PSR-3](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md) compatible
 - Integrates with [Laravel 5](http://laravel.com)
+- Fully tested
 
 ## What it does (and doesn't)
 
