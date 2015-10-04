@@ -166,12 +166,19 @@ class Client implements ClientInterface {
      */
     public function createMessage($data=null)
     {
+        $serializer = $this->getSerializer();
+        $hashgen = $this->getHashGenerator();
+
         if (is_string($data) && $data)
         {
-            $data = $this->getSerializer()->unserialize($data);
+            $data = $serializer->unserialize($data);
         }
 
-        return new Message\Message($this->getHashGenerator(), (array) $data);
+        $message = new Message\Message($data);
+        $message->setSerializer($serializer);
+        $message->setHashGenerator($hashgen);
+
+        return $message;
     }
 
     /**

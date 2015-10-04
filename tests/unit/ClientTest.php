@@ -227,31 +227,34 @@ class ClientTest extends TestCase {
 
     public function test_unstubbed_getSerializer()
     {
-        $serializer = $this->createActualClient()->getSerializer();
+        $serializer = $this->createDefaultClient()->getSerializer();
         $this->assertTrue($serializer instanceof SerializerInterface);
     }
 
     public function test_unstubbed_getHashGenerator()
     {
-        $hashgen = $this->createActualClient()->getHashGenerator();
+        $hashgen = $this->createDefaultClient()->getHashGenerator();
         $this->assertTrue($hashgen instanceof HashGeneratorInterface);
     }
 
     public function test_unstubbed_getHttpClient()
     {
-        $http = $this->createActualClient()->getHttpClient();
+        $http = $this->createDefaultClient()->getHttpClient();
         $this->assertTrue($http instanceof HttpClientInterface);
     }
 
     public function test_unstubbed_getLogger()
     {
-        $logger = $this->createActualClient()->getLogger();
+        $logger = $this->createDefaultClient()->getLogger();
         $this->assertTrue($logger instanceof LoggerInterface);
     }
 
     public function test_fails_if_createMessage_raises_exception_given_empty_string()
     {
+        $serializer = $this->serializer;
+
         $message = $this->client->createMessage('');
+
         $this->assertTrue($message instanceof MessageInterface);
     }
 
@@ -260,7 +263,7 @@ class ClientTest extends TestCase {
      * @param void
      * @return Client
      */
-    private function createActualClient()
+    private function createDefaultClient()
     {
         return new Client([
             'app_id' => $this->app_id,
