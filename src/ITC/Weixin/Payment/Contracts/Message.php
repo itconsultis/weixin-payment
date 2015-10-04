@@ -37,7 +37,32 @@ interface Message extends JsonSerializable {
 
     /**
      * @param void
+     * @return string
+     */
+    public function serialize();
+
+    /**
+     * @param void
      * @return array
      */
     public function toArray();
+
+    /**
+     * @param ITC\Weixin\Payment\Contracts\Serializer $serializer
+     * @return void
+     */
+    public function setSerializer(Serializer $serializer);
+
+    /**
+     * @param void
+     * @return ITC\Weixin\Payment\Contracts\Serializer
+     */
+    public function getSerializer();
+
+    /**
+     * @param ITC\Weixin\Payment\Contracts\HashGenerator $hashgen
+     * @return void
+     */
+    public function setHashGenerator(HashGenerator $hashgen);
+
 }

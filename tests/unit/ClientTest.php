@@ -93,7 +93,7 @@ class ClientTest extends TestCase {
         ]);
 
         // pre-request expectations
-        $request_message = $client->createMessage($initial_data);
+        $request_message = $client->message($initial_data);
         $hashgen->shouldReceive('hash')->once()->andReturn($signature);
         $serializer->shouldReceive('serialize')->once()->withArgs([$request_data])->andReturn('SERIALIZED_DATA');
 
@@ -198,13 +198,13 @@ class ClientTest extends TestCase {
         $this->assertEquals($expected, $jsapi_params->toArray());
     }
 
-    public function test_createMessage_automatic_unserialization_behavior()
+    public function test_message_automatic_unserialization_behavior()
     {
         $xml = '<xml><foo>1</foo><bar>two</bar></xml>';
 
         $this->serializer->shouldReceive('unserialize')->withArgs([$xml])->andReturn(['foo'=>1, 'bar'=>'two']);
 
-        $message = $this->client->createMessage($xml);
+        $message = $this->client->message($xml);
 
         $this->assertTrue($message instanceof MessageInterface);
         $this->assertEquals(1, $message->get('foo'));
@@ -227,31 +227,37 @@ class ClientTest extends TestCase {
 
     public function test_unstubbed_getSerializer()
     {
-        $serializer = $this->createActualClient()->getSerializer();
+        $serializer = $this->createDefaultClient()->getSerializer();
         $this->assertTrue($serializer instanceof SerializerInterface);
     }
 
     public function test_unstubbed_getHashGenerator()
     {
-        $hashgen = $this->createActualClient()->getHashGenerator();
+        $hashgen = $this->createDefaultClient()->getHashGenerator();
         $this->assertTrue($hashgen instanceof HashGeneratorInterface);
     }
 
     public function test_unstubbed_getHttpClient()
     {
-        $http = $this->createActualClient()->getHttpClient();
+        $http = $this->createDefaultClient()->getHttpClient();
         $this->assertTrue($http instanceof HttpClientInterface);
     }
 
     public function test_unstubbed_getLogger()
     {
-        $logger = $this->createActualClient()->getLogger();
+        $logger = $this->createDefaultClient()->getLogger();
         $this->assertTrue($logger instanceof LoggerInterface);
     }
 
-    public function test_fails_if_createMessage_raises_exception_given_empty_string()
+    public function test_fails_if_message_raises_exception_given_empty_string()
     {
-        $message = $this->client->createMessage('');
+        $message = $this->client->message('');
+        $this->assertTrue($message instanceof MessageInterface);
+    }
+
+    public function test_deprecated_createMessage_still_works()
+    {
+        $message = $this->client->createMessage();
         $this->assertTrue($message instanceof MessageInterface);
     }
 
@@ -260,7 +266,7 @@ class ClientTest extends TestCase {
      * @param void
      * @return Client
      */
-    private function createActualClient()
+    private function createDefaultClient()
     {
         return new Client([
             'app_id' => $this->app_id,
