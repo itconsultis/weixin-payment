@@ -45,6 +45,12 @@ interface Client extends MessageFactory {
     public function command($name);
 
     /**
+     * @param mixed $data
+     * @return ITC\Weixin\Payment\Contracts\Message
+     */
+    public function message($data);
+
+    /**
      * @param array $query
      * @param string $nonce - optional
      * @param integer $timestamp - optional

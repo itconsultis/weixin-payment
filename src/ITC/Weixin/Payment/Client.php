@@ -164,7 +164,7 @@ class Client implements ClientInterface {
      * @param mixed $data
      * @return ITC\Weixin\Payment\Contracts\Message $message
      */
-    public function createMessage($data=null)
+    public function message($data=null)
     {
         $serializer = $this->getSerializer();
         $hashgen = $this->getHashGenerator();
@@ -179,6 +179,18 @@ class Client implements ClientInterface {
         $message->setHashGenerator($hashgen);
 
         return $message;
+    }
+
+    /**
+     * @param mixed $data
+     * @return ITC\Weixin\Payment\Contracts\Message $message
+     */
+    public function createMessage($data=null)
+    {
+        $log = $this->getLogger();
+        $log->warning(__METHOD__.' is deprecated; use Client::message instead');
+
+        return $this->message($data);
     }
 
     /**

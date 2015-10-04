@@ -161,8 +161,6 @@ class MessageTest extends TestCase {
 
     public function test_fails_if_message_is_not_signed_with_reference_signature()
     {
-        $hash_secret = '192006250b4c09247ec02edce69f6a2d'; 
-
         $message = new Message([
             'appid' => 'wxd930ea5d5a258f4f',
             'mch_id' => '10000100',
@@ -171,12 +169,13 @@ class MessageTest extends TestCase {
             'nonce_str' => 'ibuaiVcKdpRxkhJA',
         ]);
 
-        $hashgen = new HashGenerator($hash_secret);
-        $message->setHashGenerator($hashgen);
-
+        $message->setHashGenerator($this->getReferenceHashGenerator());
         $message->sign();
 
-        $this->assertEquals('9A0A8659F005D6984697E2CA0A9CF3B7', $message->get('sign'));
+        $expected = '9A0A8659F005D6984697E2CA0A9CF3B7';
+        $actual = $message->get('sign');
+
+        $this->assertEquals($expected, $actual);
     }
 
     public function test_serialize()
@@ -195,14 +194,24 @@ class MessageTest extends TestCase {
         $this->assertEquals($expected, $actual);
     }
 
-    public function test_serialize_with_default_serializer()
+    public function test_serialize_signed_message_with_default_serializer()
     {
         $data = ['return_code'=>'SUCCESS'];
+
         $message = new Message($data);
+        $message->setHashGenerator($this->getReferenceHashGenerator());
+        $message->sign();
 
         $expected = '<xml><return_code><![CDATA[SUCCESS]]></return_code></xml>';
         $actual = $message->serialize();
 
         $this->assertEquals($expected, $actual);
+    }
+
+
+    private function getReferenceHashGenerator()
+    {
+        $secret = '192006250b4c09247ec02edce69f6a2d';
+        return new HashGenerator($secret);
     }
 }
