@@ -15,8 +15,9 @@ WeChat payment client library for PHP 5.5+
 
 ## What it does (and doesn't)
 
-The client exposes a simple programming interface to WeChat's payment-related web service calls.
-It transparently handles boilerplate stuff like request signing and XML serialization so you can focus on things that matter.
+The client exposes a simple programming interface to WeChat's payment-related
+web service calls. It transparently handles boilerplate stuff like request
+signing and XML serialization so you can focus on things that matter.
 
 This package does not perform authentication; it will *not* help you get a user's
 OpenID. Fortunately, there are plenty of other packages that already do this.
@@ -74,50 +75,42 @@ This library represents XML payloads transported between the client and the
 WeChat web service as *messages*. A [Message](https://github.com/itconsultis/weixin-payment/blob/master/src/ITC/Weixin/Payment/Contracts/Message.php)
 is an object that:
 
-- can serialize itself 
+- can be serialized to XML
 - supports hash-based signing and authentication
-- can authenticate itself
 - provides key/value access to its attributes
 
-
-### Creating a Message instance
+#### How to create a Message instance
 ```php
 // create a Message instance with the "return_code" attribute
 $message = $client->message(['return_code'=>'FAIL']);
 ```
 
-### How to add message attributes
+#### How to add message attributes
 ```php
 $message->set('foo', 1);
 $message->set('bar', 'two');
 ```
 
-### How to convert a message to XML
+#### How to convert a message to XML
 ```
 $message->serialize();
 ```
 
-### How to sign a message
+#### How to sign a message
 ```php
-// This adds a "sign" attribute to the Mesage instance
+// this adds a "sign" attribute to the Mesage instance
 $message->sign();
 
 $message->get('sign');
 >>> "2C2B2A1D626E750FCFD0ED661E80E3AA"
 ```
 
-### How to authenticate a signed message
-```php
-$message->authenticate();
-```
+#### How to authenticate a signed message
 
-Generally, whenever execute a `Command` (see below), you will want to
+Generally, whenever you execute a `Command` (see below), you will want to
 authenticate the result:
-
 ```php
 $result = $client->command('pay/unifiedorder')->execute([/* ... */]);
-
-// boolean true or false
 $kosher = $result->authenticate();
 ```
 
