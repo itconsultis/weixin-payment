@@ -179,4 +179,30 @@ class MessageTest extends TestCase {
         $this->assertEquals('9A0A8659F005D6984697E2CA0A9CF3B7', $message->get('sign'));
     }
 
+    public function test_serialize()
+    {
+        $serializer = $this->serializer;
+        $data = ['foo'=>1];
+
+        $message = new Message($data);
+        $message->setSerializer($serializer);
+
+        $expected = '<xml><foo>1</foo></xml>';
+
+        $serializer->shouldReceive('serialize')->withArgs([$data])->andReturn($expected);
+        $actual = $message->serialize();
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function test_serialize_with_default_serializer()
+    {
+        $data = ['return_code'=>'SUCCESS'];
+        $message = new Message($data);
+
+        $expected = '<xml><return_code><![CDATA[SUCCESS]]></return_code></xml>';
+        $actual = $message->serialize();
+
+        $this->assertEquals($expected, $actual);
+    }
 }
