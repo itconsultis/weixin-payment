@@ -7,10 +7,11 @@ WeChat payment client library for PHP 5.5+
 ## Features
 
 - Simple, intuitive programming interface
-- Fully tested
+- Composer-friendly; just install the package and go!
 - [PSR-7](http://www.php-fig.org/psr/psr-7/) compatible
 - [PSR-3](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md) compatible
 - Integrates with [Laravel 5](http://laravel.com)
+- Fully tested
 
 ## What it does (and doesn't)
 
@@ -25,7 +26,6 @@ OpenID. Fortunately, there are plenty of other packages that already do this.
 ## Usage
 
 #### Create a Client instance
-
 ```php
 $client = \ITC\Weixin\Payment\Client::instance([
     'app_id' => 'your appid',
@@ -37,7 +37,6 @@ $client = \ITC\Weixin\Payment\Client::instance([
 ```
 
 #### Start a payment
-
 ```php
 // execute the "pay/unifiedorder" command; the result is a Message instance
 $result = $client->command('pay/unifiedorder')->execute([
@@ -69,11 +68,64 @@ WeixinJSBridge.invoke('getBrandWCPayRequest', jsbridge_params, function(result) 
 });
 ```
 
+## Messages
+
+This library represents XML payloads transported between the client and the
+WeChat web service as *messages*. A [Message](https://github.com/itconsultis/weixin-payment/blob/master/src/ITC/Weixin/Payment/Contracts/Message.php)
+is an object that:
+
+- can serialize itself 
+- supports hash-based signing and authentication
+- can authenticate itself
+- provides key/value access to its attributes
+
+
+### Creating a Message instance
+```php
+// create a Message instance with the "return_code" attribute
+$message = $client->message(['return_code'=>'FAIL']);
+```
+
+### How to add message attributes
+```php
+$message->set('foo', 1);
+$message->set('bar', 'two');
+```
+
+### How to convert a message to XML
+```
+$message->serialize();
+```
+
+### How to sign a message
+```php
+// This adds a "sign" attribute to the Mesage instance
+$message->sign();
+
+$message->get('sign');
+>>> "2C2B2A1D626E750FCFD0ED661E80E3AA"
+```
+
+### How to authenticate a signed message
+```php
+$message->authenticate();
+```
+
+Generally, whenever execute a `Command` (see below), you will want to
+authenticate the result:
+
+```php
+$result = $client->command('pay/unifiedorder')->execute([/* ... */]);
+
+// boolean true or false
+$kosher = $result->authenticate();
+```
+
 ## Commands
 
-This package abstracts the various web service calls to the payment API as *commands*. A
+The various web service calls to the payment API are *commands*. A
 [Command](https://github.com/itconsultis/weixin-payment/blob/master/src/ITC/Weixin/Payment/Contracts/Command.php) is an
-object that has an `execute` method that accepts key-value pairs, and returns a `Message`.
+object that has an `execute` method which returns a `Message`.
 
 
 
@@ -138,40 +190,11 @@ object that has an `execute` method that accepts key-value pairs, and returns a 
     $result = $client->command('tools/shorturl')->execute([/* ... */]);
     ```
 
-## Messages
-
-This library represents XML payloads transported between the client and the
-WeChat web service as *messages*. A [Message](https://github.com/itconsultis/weixin-payment/blob/master/src/ITC/Weixin/Payment/Contracts/Message.php)
-is a signable, authenticatable object that provides uniform key/value access to its underlying data structure.
-
-```php
-$message = $client->createMessage(['foo'=>1, 'bar'=>'two']);
-
-// authenticate an unsigned message; returns boolean false
-$message->authenticate(); 
-
-// sign the message
-$message->sign();
-
-// authenticate a signed message; returns boolean true
-$message->authenticate();
-```
-
-When you execute a command, you are actually getting back a `Message` that
-can be authenticated at any time.
-
-```php
-$result = $client->command('pay/unifiedorder')->execute([/* ... */]);
-
-// boolean true or false
-$authentic = $result->authenticate();
-```
-
 ## Installation
 
 ### Composer
 
-    composer install itc/weixin-payment
+    composer require itc/weixin-payment:1.1.0
 
 ### Laravel
 

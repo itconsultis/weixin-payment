@@ -1,8 +1,11 @@
 <?php namespace ITC\Weixin\Payment\Message;
 
+use RuntimeException;
 use ITC\Weixin\Payment\Contracts\Message as MessageInterface;
 use ITC\Weixin\Payment\Contracts\HashGenerator as HashGeneratorInterface;
+use ITC\Weixin\Payment\Contracts\Serializer as SerializerInterface;
 use ITC\Weixin\Payment\HashGenerator;
+use ITC\Weixin\Payment\XmlSerializer;
 
 class Message implements MessageInterface {
 
@@ -12,16 +15,32 @@ class Message implements MessageInterface {
     private $data = [];
 
     /**
+     * @var ITC\Weixin\Payment\Contracts\HashGenerator
+     */
+    private $hashgen;
+
+    /**
+     * @var ITC\Weixin\Payment\Contracts\Serializer
+     */
+    private $serializer;
+
+    /**
      * @param ITC\Weixin\Payment\Contracts\HashGenerator $hashgen
      * @param array $data
      */
-    public function __construct(HashGeneratorInterface $hashgen, array $data=null)
+    public function __construct($data=null,
+        HashGeneratorInterface $hashgen=null,
+        SerializerInterface $serializer=null)
     {
-        $this->hashgen = $hashgen;
+        $hashgen && $this->setHashGenerator($hashgen);
+        $serializer && $this->setSerializer($serializer);
 
-        foreach ((array) $data as $attr => $value)
+        if ($data)
         {
-            $this->set($attr, $value);
+            foreach ((array) $data as $attr => $value)
+            {
+                $this->set($attr, $value);
+            }
         }
     }
 
@@ -64,7 +83,7 @@ class Message implements MessageInterface {
     public function sign()
     {
         unset($this->data['sign']);
-        $this->data['sign'] = $this->hashgen->hash($this->data);
+        $this->data['sign'] = $this->getHashGenerator()->hash($this->data);
     }
 
     /**
@@ -78,7 +97,7 @@ class Message implements MessageInterface {
             $data = $this->data;
             unset($data['sign']);
 
-            return $signature === $this->hashgen->hash($data);
+            return $signature === $this->getHashGenerator()->hash($data);
         }
 
         return false;
@@ -118,6 +137,61 @@ class Message implements MessageInterface {
         }
 
         return implode('&', $tokens);
+    }
+
+    /**
+     * @param void
+     * @return string
+     */
+    public function serialize()
+    {
+        return $this->getSerializer()->serialize($this->data);
+    }
+
+    /**
+     * @param ITC\Weixin\Payment\Contracts\Serializer $serializer
+     * @return void
+     */
+    public function setSerializer(SerializerInterface $serializer)
+    {
+        $this->serializer = $serializer;
+    }
+
+    /**
+     * @param void
+     * @return ITC\Weixin\Payment\Contracts\Serializer
+     */
+    public function getSerializer()
+    {
+        if (!$this->serializer)
+        {
+            $this->serializer = new XmlSerializer();
+        }
+
+        return $this->serializer;
+    }
+
+    /**
+     * @param ITC\Weixin\Payment\Contracts\HashGenerator $hashgen
+     * @return void
+     */
+    public function setHashGenerator(HashGeneratorInterface $hashgen)
+    {
+        $this->hashgen = $hashgen;
+    }
+
+    /**
+     * @param void
+     * @param ITC\Weixin\Payment\Contracts\HashGenerator
+     */
+    public function getHashGenerator()
+    {
+        if (!$this->hashgen)
+        {
+            throw new RuntimeException('a hash generator has not been assigned');
+        }
+
+        return $this->hashgen;
     }
 
 }

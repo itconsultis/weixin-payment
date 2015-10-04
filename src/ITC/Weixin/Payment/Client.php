@@ -164,14 +164,33 @@ class Client implements ClientInterface {
      * @param mixed $data
      * @return ITC\Weixin\Payment\Contracts\Message $message
      */
-    public function createMessage($data=null)
+    public function message($data=null)
     {
+        $serializer = $this->getSerializer();
+        $hashgen = $this->getHashGenerator();
+
         if (is_string($data) && $data)
         {
-            $data = $this->getSerializer()->unserialize($data);
+            $data = $serializer->unserialize($data);
         }
 
-        return new Message\Message($this->getHashGenerator(), (array) $data);
+        $message = new Message\Message($data);
+        $message->setSerializer($serializer);
+        $message->setHashGenerator($hashgen);
+
+        return $message;
+    }
+
+    /**
+     * @param mixed $data
+     * @return ITC\Weixin\Payment\Contracts\Message $message
+     */
+    public function createMessage($data=null)
+    {
+        $log = $this->getLogger();
+        $log->warning(__METHOD__.' is deprecated; use Client::message instead');
+
+        return $this->message($data);
     }
 
     /**
