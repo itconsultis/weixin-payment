@@ -202,7 +202,7 @@ class MessageTest extends TestCase {
         $message->setHashGenerator($this->getReferenceHashGenerator());
         $message->sign();
 
-        $expected = '<xml><return_code><![CDATA[SUCCESS]]></return_code></xml>';
+        $expected = '<xml><return_code><![CDATA[SUCCESS]]></return_code><sign><![CDATA[2C2B2A1D626E750FCFD0ED661E80E3AA]]></sign></xml>';
         $actual = $message->serialize();
 
         $this->assertEquals($expected, $actual);
