@@ -187,7 +187,7 @@ object that has an `execute` method which returns a `Message`.
 
 ### Composer
 
-    composer require itc/weixin-payment:1.1.0
+    composer require itc/weixin-payment:1.1.1
 
 ### Laravel
 
