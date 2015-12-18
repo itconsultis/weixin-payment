@@ -12,6 +12,14 @@ abstract class Command implements CommandInterface
     protected $client;
 
     /**
+     * @return ITC\Weixin\Payment\Contracts\Command
+     */
+    public static function make()
+    {
+        return new static();
+    }
+
+    /**
      * @param array $params
      * @param array $errors
      */

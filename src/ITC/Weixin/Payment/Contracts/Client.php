@@ -37,9 +37,9 @@ interface Client extends MessageFactory
     public function post($url, Message $message, HttpResponse &$response = null);
 
     /**
-     * @param ITC\Weixin\Payment\Contracts\Command $command
+     * @param ITC\Weixin\Payment\Contracts\Command|string $command
      */
-    public function register(Command $command);
+    public function register($command);
 
     /**
      * @param string $name

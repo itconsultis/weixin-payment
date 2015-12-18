@@ -24,6 +24,12 @@ class CreateUnifiedOrderTest extends TestCase
         $this->assertTrue($this->command instanceof CommandInterface);
     }
 
+    public function test_creation()
+    {
+        $command = CreateUnifiedOrder::make();
+        $this->assertTrue($this->command instanceof CreateUnifiedOrder);
+    }
+
     public function test_execute()
     {
         $client = $this->client;
