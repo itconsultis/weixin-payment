@@ -1,17 +1,16 @@
-<?php namespace ITC\Weixin\Payment\Test;
+<?php
 
-use Serializable;
-use JsonSerializable;
+namespace ITC\Weixin\Payment\Test;
+
 use Mockery;
 use ITC\Weixin\Payment\Contracts\HashGenerator as HashGeneratorInterface;
 use ITC\Weixin\Payment\Contracts\Serializer as SerializerInterface;
-use ITC\Weixin\Payment\Contracts\Message as MessageInterface;
 use ITC\Weixin\Payment\Message\Message;
 use ITC\Weixin\Payment\HashGenerator;
 use ITC\Weixin\Payment\XmlSerializer;
 
-class MessageTest extends TestCase {
-
+class MessageTest extends TestCase
+{
     public function setUp()
     {
         $this->hashgen = Mockery::mock(HashGeneratorInterface::class);
@@ -38,7 +37,7 @@ class MessageTest extends TestCase {
 
     public function test_attribute_assignment_via_constructor()
     {
-        $message = new Message(['foo'=>1, 'bar'=>'two']);
+        $message = new Message(['foo' => 1, 'bar' => 'two']);
 
         $this->assertSame(1, $message->get('foo'));
         $this->assertSame('two', $message->get('bar'));
@@ -60,7 +59,7 @@ class MessageTest extends TestCase {
 
         $this->assertNull($message->get('foo'));
 
-        $this->assertEquals(['bar'=>'two'], $message->toArray());
+        $this->assertEquals(['bar' => 'two'], $message->toArray());
     }
 
     public function test_signing()
@@ -72,14 +71,14 @@ class MessageTest extends TestCase {
         $message->set('bar', 'two');
 
         $this->assertNull($message->get('sign'));
-        $hashgen->shouldReceive('hash')->once()->withArgs([['foo'=>1, 'bar'=>'two']])->andReturn('MESSAGE_SIGNATURE');
+        $hashgen->shouldReceive('hash')->once()->withArgs([['foo' => 1, 'bar' => 'two']])->andReturn('MESSAGE_SIGNATURE');
         $message->sign();
         $this->assertEquals('MESSAGE_SIGNATURE', $message->get('sign'));
 
         // try to sign a message that already has an (invalid) signature
         // expect the "sign" attribute to be replaced with the correct signature
         $message->set('sign', 'INVALID_SIGNATURE');
-        $hashgen->shouldReceive('hash')->once()->withArgs([['foo'=>1, 'bar'=>'two']])->andReturn('MESSAGE_SIGNATURE');
+        $hashgen->shouldReceive('hash')->once()->withArgs([['foo' => 1, 'bar' => 'two']])->andReturn('MESSAGE_SIGNATURE');
         $message->sign();
         $this->assertEquals('MESSAGE_SIGNATURE', $message->get('sign'));
     }
@@ -109,13 +108,13 @@ class MessageTest extends TestCase {
         $message->set('bar', 'two');
         $message->set('sign', 'MESSAGE_SIGNATURE');
 
-        $hashgen->shouldReceive('hash')->once()->withArgs([['foo'=>1, 'bar'=>'two']])->andReturn('MESSAGE_SIGNATURE');
+        $hashgen->shouldReceive('hash')->once()->withArgs([['foo' => 1, 'bar' => 'two']])->andReturn('MESSAGE_SIGNATURE');
         $this->assertTrue($message->authenticate());
 
         $message->set('sign', 'INVALID_MESSAGE_SIGNATURE');
 
-        $hashgen->shouldReceive('hash')->once()->withArgs([['foo'=>1, 'bar'=>'two']])->andReturn('MESSAGE_SIGNATURE');
-        $this->assertFalse($message->authenticate());        
+        $hashgen->shouldReceive('hash')->once()->withArgs([['foo' => 1, 'bar' => 'two']])->andReturn('MESSAGE_SIGNATURE');
+        $this->assertFalse($message->authenticate());
     }
 
     public function test_fails_if_unsigned_message_passes_authentication()
@@ -143,19 +142,18 @@ class MessageTest extends TestCase {
         $this->assertFalse($message->authenticate());
     }
 
-
     public function test_array_attribute_query_stringification_behavior()
     {
-        $message = new Message(['package'=>['prepay_id'=>12345]]);
+        $message = new Message(['package' => ['prepay_id' => 12345]]);
         $this->assertEquals('prepay_id=12345', $message->get('package'));
 
-        $message->set('package', ['foo'=>1, 'bar'=>'two']);
+        $message->set('package', ['foo' => 1, 'bar' => 'two']);
         $this->assertEquals('foo=1&bar=two', $message->get('package'));
     }
 
     public function test_fails_if_query_stringified_value_is_url_encoded()
     {
-        $message = new Message(['package'=>['wtf'=>'this value contains whitespace']]);
+        $message = new Message(['package' => ['wtf' => 'this value contains whitespace']]);
         $this->assertEquals('wtf=this value contains whitespace', $message->get('package'));
     }
 
@@ -181,7 +179,7 @@ class MessageTest extends TestCase {
     public function test_serialize()
     {
         $serializer = $this->serializer;
-        $data = ['foo'=>1];
+        $data = ['foo' => 1];
 
         $message = new Message($data);
         $message->setSerializer($serializer);
@@ -196,7 +194,7 @@ class MessageTest extends TestCase {
 
     public function test_serialize_signed_message_with_default_serializer()
     {
-        $data = ['return_code'=>'SUCCESS'];
+        $data = ['return_code' => 'SUCCESS'];
 
         $message = new Message($data);
         $message->setHashGenerator($this->getReferenceHashGenerator());
@@ -208,10 +206,10 @@ class MessageTest extends TestCase {
         $this->assertEquals($expected, $actual);
     }
 
-
     private function getReferenceHashGenerator()
     {
         $secret = '192006250b4c09247ec02edce69f6a2d';
+
         return new HashGenerator($secret);
     }
 }

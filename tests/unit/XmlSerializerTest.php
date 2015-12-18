@@ -1,10 +1,12 @@
-<?php namespace ITC\Weixin\Payment\Test;
+<?php
+
+namespace ITC\Weixin\Payment\Test;
 
 use ITC\Weixin\Payment\Contracts\Serializer as SerializerInterface;
 use ITC\Weixin\Payment\XmlSerializer;
 
-class XmlSerializerTest extends TestCase {
-
+class XmlSerializerTest extends TestCase
+{
     public function setUp()
     {
         parent::setUp();
@@ -30,8 +32,7 @@ class XmlSerializerTest extends TestCase {
         $xml = $this->serializer->serialize($data);
         $xmldoc = simplexml_load_string($xml, null, LIBXML_NOCDATA);
 
-        foreach ($data as $key => $value)
-        {
+        foreach ($data as $key => $value) {
             $this->assertSame($value, (string) $xmldoc->$key);
         }
     }
@@ -50,5 +51,4 @@ class XmlSerializerTest extends TestCase {
 
         $this->assertEquals($expected, $this->serializer->unserialize($xml));
     }
-
 }

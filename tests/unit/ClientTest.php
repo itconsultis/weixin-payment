@@ -1,4 +1,6 @@
-<?php namespace ITC\Weixin\Payment\Test;
+<?php
+
+namespace ITC\Weixin\Payment\Test;
 
 use OutOfBoundsException;
 use UnexpectedValueException;
@@ -13,10 +15,8 @@ use ITC\Weixin\Payment\Contracts\Client as ClientInterface;
 use ITC\Weixin\Payment\Contracts\Message as MessageInterface;
 use ITC\Weixin\Payment\Client;
 
-use ITC\Weixin\Payment\Command\CreateUnifiedOrder;
-
-class ClientTest extends TestCase {
-
+class ClientTest extends TestCase
+{
     public function setUp()
     {
         parent::setUp();
@@ -27,8 +27,7 @@ class ClientTest extends TestCase {
         $this->http = Mockery::mock(HttpClientInterface::class)->makePartial();
         $this->logger = Mockery::mock(LoggerInterface::class);
 
-        foreach (['log', 'debug', 'info', 'notice', 'warning', 'error'] as $log_level)
-        {
+        foreach (['log', 'debug', 'info', 'notice', 'warning', 'error'] as $log_level) {
             $this->logger->shouldReceive($log_level)->withAnyArgs();
         }
 
@@ -99,20 +98,20 @@ class ClientTest extends TestCase {
 
         // post-request expectations
         $response_xml = '<xml><foo>1</foo><bar>two</bar><sign>RESPONSE_MESSAGE_SIGNATURE</xml>';
-        $response_data = ['foo'=>1, 'bar'=>'two', 'sign'=>'RESPONSE_MESSAGE_SIGNATURE'];
+        $response_data = ['foo' => 1, 'bar' => 'two', 'sign' => 'RESPONSE_MESSAGE_SIGNATURE'];
         $expected_response = Mockery::mock(HttpResponseInterface::class)->makePartial();
         $expected_response->shouldReceive('getStatusCode')->once()->andReturn(200);
         $expected_response->shouldReceive('getBody')->once()->andReturn($response_xml);
         $serializer->shouldReceive('unserialize')->once()->withArgs([$response_xml])->andReturn($response_data);
 
-        $http->shouldReceive('post')->once()->withArgs([$request_url, ['body'=>'SERIALIZED_DATA']])->andReturn($expected_response);
+        $http->shouldReceive('post')->once()->withArgs([$request_url, ['body' => 'SERIALIZED_DATA']])->andReturn($expected_response);
 
-        $actual_response = null; 
+        $actual_response = null;
         $response_message = $this->client->post($request_url, $request_message, $actual_response);
 
         $this->assertSame($expected_response, $actual_response);
         $this->assertTrue($response_message instanceof MessageInterface);
-       
+
         $this->assertSame(1, $response_message->get('foo'));
         $this->assertSame('two', $response_message->get('bar'));
         $this->assertSame('RESPONSE_MESSAGE_SIGNATURE', $response_message->get('sign'));
@@ -125,7 +124,7 @@ class ClientTest extends TestCase {
         $serializer = $this->serializer;
 
         $url = 'http://foo/bar';
-        $data = ['foo'=>1];
+        $data = ['foo' => 1];
 
         $message = Mockery::mock(MessageInterface::class);
         $message->shouldReceive('toArray')->andReturn($data);
@@ -135,18 +134,15 @@ class ClientTest extends TestCase {
 
         $serializer->shouldReceive('serialize')->withArgs([$data])->andReturn('<xml><foo>1</foo></xml>');
 
-        $http_response= Mockery::mock(HttpResponseInterface::class);
+        $http_response = Mockery::mock(HttpResponseInterface::class);
         $http_response->shouldReceive('getStatusCode')->atLeast()->once()->andReturn(400);
         $http_response->shouldReceive('getBody')->andReturn('<xml><wtf>dude></wtf></xml>');
 
         $http->shouldReceive('post')->withAnyArgs()->andReturn($http_response);
 
-        try
-        {
+        try {
             $client->post($url, $message);
-        }
-        catch (UnexpectedValueException $e)
-        {
+        } catch (UnexpectedValueException $e) {
             return;
         }
 
@@ -168,8 +164,7 @@ class ClientTest extends TestCase {
             'pay/orderquery',
         ];
 
-        foreach ($commands as $name)
-        {
+        foreach ($commands as $name) {
             $command = $client->command($name);
             $this->assertTrue($command instanceof CommandInterface);
         }
@@ -177,7 +172,7 @@ class ClientTest extends TestCase {
 
     public function test_jsapize()
     {
-        $query = ['prepay_id'=>'PREPAY_ID', 'foo'=>1, 'bar'=>'two'];
+        $query = ['prepay_id' => 'PREPAY_ID', 'foo' => 1, 'bar' => 'two'];
         $timestamp = 10000000;
         $nonce = 'NONCE';
 
@@ -202,7 +197,7 @@ class ClientTest extends TestCase {
     {
         $xml = '<xml><foo>1</foo><bar>two</bar></xml>';
 
-        $this->serializer->shouldReceive('unserialize')->withArgs([$xml])->andReturn(['foo'=>1, 'bar'=>'two']);
+        $this->serializer->shouldReceive('unserialize')->withArgs([$xml])->andReturn(['foo' => 1, 'bar' => 'two']);
 
         $message = $this->client->message($xml);
 
@@ -213,13 +208,10 @@ class ClientTest extends TestCase {
 
     public function test_passes_if_exception_is_raised()
     {
-        try
-        {
+        try {
             $this->client->command('unregistered-command');
-        }
-        catch (OutOfBoundsException $e)
-        {
-            return;    
+        } catch (OutOfBoundsException $e) {
+            return;
         }
 
         $this->fail();
@@ -262,8 +254,10 @@ class ClientTest extends TestCase {
     }
 
     /**
-     * Create a Client instance without any stubbed dependencies
+     * Create a Client instance without any stubbed dependencies.
+     *
      * @param void
+     *
      * @return Client
      */
     private function createDefaultClient()
@@ -276,5 +270,4 @@ class ClientTest extends TestCase {
             'private_key_path' => '/path/to/private/key',
         ]);
     }
-
 }

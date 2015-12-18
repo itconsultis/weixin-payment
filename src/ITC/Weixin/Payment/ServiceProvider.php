@@ -1,4 +1,6 @@
-<?php namespace ITC\Weixin\Payment;
+<?php
+
+namespace ITC\Weixin\Payment;
 
 use UnexpectedValueException;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
@@ -6,12 +8,12 @@ use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 /**
  * @codeCoverageIgnore
  */
-class ServiceProvider extends BaseServiceProvider {
-
+class ServiceProvider extends BaseServiceProvider
+{
     /**
-     * Lifecycle moment
+     * Lifecycle moment.
+     *
      * @param void
-     * @return void
      */
     public function register()
     {
@@ -19,9 +21,9 @@ class ServiceProvider extends BaseServiceProvider {
     }
 
     /**
-     * Lifecycle moment
+     * Lifecycle moment.
+     *
      * @param void
-     * @return void
      */
     public function boot()
     {
@@ -30,14 +32,13 @@ class ServiceProvider extends BaseServiceProvider {
     }
 
     /**
-     * Registers the Client on the service container
+     * Registers the Client on the service container.
+     *
      * @param void
-     * @return void
      */
     private function registerClient()
     {
-        $this->app->bind(Contracts\Client::class, function($app)
-        {
+        $this->app->bind(Contracts\Client::class, function ($app) {
             $client = Client::instance(config('weixin-payment'));
             $client->setLogger($app->make('log'));
 
@@ -46,16 +47,17 @@ class ServiceProvider extends BaseServiceProvider {
     }
 
     /**
-     * This satisfies vendor:publish requirements
+     * This satisfies vendor:publish requirements.
+     *
      * @param void
+     *
      * @return
      */
     private function registerResources()
     {
         $project_root = __DIR__.'/../../../..';
 
-        if (!$resources = realpath($project_root.'/resources'))
-        {
+        if (!$resources = realpath($project_root.'/resources')) {
             throw new UnexpectedValueException('could not locate resources directory');
         }
 
@@ -66,17 +68,18 @@ class ServiceProvider extends BaseServiceProvider {
 
     /**
      * @param void
+     *
      * @return array
      */
     public static function compiles()
     {
         return [
-            __DIR__.'/Contracts/HashGenerator.php', 
-            __DIR__.'/Contracts/Serializer.php', 
-            __DIR__.'/Contracts/Message.php', 
-            __DIR__.'/Contracts/MessageFactory.php', 
-            __DIR__.'/Contracts/Command.php', 
-            __DIR__.'/Contracts/Client.php', 
+            __DIR__.'/Contracts/HashGenerator.php',
+            __DIR__.'/Contracts/Serializer.php',
+            __DIR__.'/Contracts/Message.php',
+            __DIR__.'/Contracts/MessageFactory.php',
+            __DIR__.'/Contracts/Command.php',
+            __DIR__.'/Contracts/Client.php',
             __DIR__.'/Command/Command.php',
             __DIR__.'/Command/CreateUnifiedOrder.php',
             __DIR__.'/Command/OrderQuery.php',

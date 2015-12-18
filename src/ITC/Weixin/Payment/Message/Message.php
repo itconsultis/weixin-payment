@@ -1,14 +1,15 @@
-<?php namespace ITC\Weixin\Payment\Message;
+<?php
+
+namespace ITC\Weixin\Payment\Message;
 
 use RuntimeException;
 use ITC\Weixin\Payment\Contracts\Message as MessageInterface;
 use ITC\Weixin\Payment\Contracts\HashGenerator as HashGeneratorInterface;
 use ITC\Weixin\Payment\Contracts\Serializer as SerializerInterface;
-use ITC\Weixin\Payment\HashGenerator;
 use ITC\Weixin\Payment\XmlSerializer;
 
-class Message implements MessageInterface {
-
+class Message implements MessageInterface
+{
     /**
      * @var array
      */
@@ -26,19 +27,17 @@ class Message implements MessageInterface {
 
     /**
      * @param ITC\Weixin\Payment\Contracts\HashGenerator $hashgen
-     * @param array $data
+     * @param array                                      $data
      */
-    public function __construct($data=null,
-        HashGeneratorInterface $hashgen=null,
-        SerializerInterface $serializer=null)
+    public function __construct($data = null,
+        HashGeneratorInterface $hashgen = null,
+        SerializerInterface $serializer = null)
     {
         $hashgen && $this->setHashGenerator($hashgen);
         $serializer && $this->setSerializer($serializer);
 
-        if ($data)
-        {
-            foreach ((array) $data as $attr => $value)
-            {
+        if ($data) {
+            foreach ((array) $data as $attr => $value) {
                 $this->set($attr, $value);
             }
         }
@@ -46,6 +45,7 @@ class Message implements MessageInterface {
 
     /**
      * @param string $attr
+     *
      * @return mixed
      */
     public function get($attr)
@@ -55,13 +55,11 @@ class Message implements MessageInterface {
 
     /**
      * @param string $attr
-     * @param mixed $value
-     * @return void
+     * @param mixed  $value
      */
     public function set($attr, $value)
     {
-        if (is_array($value))
-        {
+        if (is_array($value)) {
             $value = $this->createPseudoQuery($value);
         }
         $this->data[$attr] = $value;
@@ -69,7 +67,6 @@ class Message implements MessageInterface {
 
     /**
      * @param string $attr
-     * @return void
      */
     public function clear($attr)
     {
@@ -78,7 +75,6 @@ class Message implements MessageInterface {
 
     /**
      * @param void
-     * @return void
      */
     public function sign()
     {
@@ -88,12 +84,12 @@ class Message implements MessageInterface {
 
     /**
      * @param void
+     *
      * @return bool
      */
     public function authenticate()
     {
-        if ($signature = $this->get('sign'))
-        {
+        if ($signature = $this->get('sign')) {
             $data = $this->data;
             unset($data['sign']);
 
@@ -105,6 +101,7 @@ class Message implements MessageInterface {
 
     /**
      * @param void
+     *
      * @return array
      */
     public function toArray()
@@ -114,6 +111,7 @@ class Message implements MessageInterface {
 
     /**
      * @param void
+     *
      * @return array
      */
     public function jsonSerialize()
@@ -122,18 +120,18 @@ class Message implements MessageInterface {
     }
 
     /**
-     * {i: 'am', not: 'url encoded'}  -> "i=am&not=url encoded"
+     * {i: 'am', not: 'url encoded'}  -> "i=am&not=url encoded".
      * 
      * @param array $data
+     *
      * @return string
      */
     private function createPseudoQuery(array $data)
     {
         $tokens = [];
 
-        foreach ($data as $key => $value)
-        {
-            $tokens[] = $key .'='. $value;
+        foreach ($data as $key => $value) {
+            $tokens[] = $key.'='.$value;
         }
 
         return implode('&', $tokens);
@@ -141,6 +139,7 @@ class Message implements MessageInterface {
 
     /**
      * @param void
+     *
      * @return string
      */
     public function serialize()
@@ -150,7 +149,6 @@ class Message implements MessageInterface {
 
     /**
      * @param ITC\Weixin\Payment\Contracts\Serializer $serializer
-     * @return void
      */
     public function setSerializer(SerializerInterface $serializer)
     {
@@ -159,12 +157,12 @@ class Message implements MessageInterface {
 
     /**
      * @param void
+     *
      * @return ITC\Weixin\Payment\Contracts\Serializer
      */
     public function getSerializer()
     {
-        if (!$this->serializer)
-        {
+        if (!$this->serializer) {
             $this->serializer = new XmlSerializer();
         }
 
@@ -173,7 +171,6 @@ class Message implements MessageInterface {
 
     /**
      * @param ITC\Weixin\Payment\Contracts\HashGenerator $hashgen
-     * @return void
      */
     public function setHashGenerator(HashGeneratorInterface $hashgen)
     {
@@ -186,12 +183,10 @@ class Message implements MessageInterface {
      */
     public function getHashGenerator()
     {
-        if (!$this->hashgen)
-        {
+        if (!$this->hashgen) {
             throw new RuntimeException('a hash generator has not been assigned');
         }
 
         return $this->hashgen;
     }
-
 }

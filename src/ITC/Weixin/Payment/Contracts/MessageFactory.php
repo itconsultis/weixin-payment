@@ -1,10 +1,13 @@
-<?php namespace ITC\Weixin\Payment\Contracts;
+<?php
 
-interface MessageFactory {
+namespace ITC\Weixin\Payment\Contracts;
 
+interface MessageFactory
+{
     /**
      * @param mixed $data
+     *
      * @return ITC\Weixin\Payment\Contracts\Message
      */
-    public function createMessage($data=null);
+    public function createMessage($data = null);
 }
