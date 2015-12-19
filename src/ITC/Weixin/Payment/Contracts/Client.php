@@ -1,11 +1,13 @@
-<?php namespace ITC\Weixin\Payment\Contracts;
+<?php
+
+namespace ITC\Weixin\Payment\Contracts;
 
 use Psr\Log\LoggerInterface as Logger;
 use Psr\Http\Message\ResponseInterface as HttpResponse;
 use GuzzleHttp\ClientInterface as HttpClient;
 
-interface Client extends MessageFactory {
-
+interface Client extends MessageFactory
+{
     public function setHttpClient(HttpClient $client);
     public function getHttpClient();
 
@@ -20,42 +22,45 @@ interface Client extends MessageFactory {
 
     /**
      * @param bool $secure
+     *
      * @return ITC\Weixin\Payment\Contracts\Client
      */
-    public function secure($secure=true);
+    public function secure($secure = true);
 
     /**
-     * @param string $url
+     * @param string                               $url
      * @param ITC\Weixin\Payment\Contracts\Message $message
-     * @param array $options
+     * @param array                                $options
+     *
      * @return array
      */
-    public function post($url, Message $message, HttpResponse &$response=null);
+    public function post($url, Message $message, HttpResponse &$response = null);
 
     /**
      * @param ITC\Weixin\Payment\Contracts\Command $command
-     * @return void
      */
     public function register(Command $command);
 
     /**
      * @param string $name
+     *
      * @return ITC\Weixin\Payment\Contracts\Command
      */
     public function command($name);
 
     /**
      * @param mixed $data
+     *
      * @return ITC\Weixin\Payment\Contracts\Message
      */
-    public function message($data=null);
+    public function message($data = null);
 
     /**
-     * @param array $query
-     * @param string $nonce - optional
-     * @param integer $timestamp - optional
+     * @param array  $query
+     * @param string $nonce     - optional
+     * @param int    $timestamp - optional
+     *
      * @return JsonSerializable
      */
-    public function jsapize(array $query, $nonce=null, $timestamp=null);
-
+    public function jsapize(array $query, $nonce = null, $timestamp = null);
 }

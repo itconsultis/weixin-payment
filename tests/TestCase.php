@@ -1,9 +1,11 @@
-<?php namespace ITC\Weixin\Payment\Test;
+<?php
+
+namespace ITC\Weixin\Payment\Test;
 
 use Mockery;
 
-class TestCase extends \PHPUnit_Framework_TestCase {
-
+class TestCase extends \PHPUnit_Framework_TestCase
+{
     public function setUp()
     {
         // implement me
@@ -13,5 +15,4 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     {
         Mockery::close();
     }
-
 }

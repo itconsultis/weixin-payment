@@ -1,21 +1,21 @@
-<?php namespace ITC\Weixin\Payment;
+<?php
+
+namespace ITC\Weixin\Payment;
 
 use OutOfBoundsException;
 use UnexpectedValueException;
-use RuntimeException;
 use Psr\Log\LoggerInterface;
 use Psr\Http\Message\ResponseInterface as HttpResponseInterface;
 use GuzzleHttp\ClientInterface as HttpClientInterface;
 use GuzzleHttp\Client as HttpClient;
-
 use ITC\Weixin\Payment\Contracts\Client as ClientInterface;
 use ITC\Weixin\Payment\Contracts\Message as MessageInterface;
 use ITC\Weixin\Payment\Contracts\HashGenerator as HashGeneratorInterface;
 use ITC\Weixin\Payment\Contracts\Serializer as SerializerInterface;
 use ITC\Weixin\Payment\Contracts\Command as CommandInterface;
 
-class Client implements ClientInterface {
-
+class Client implements ClientInterface
+{
     private $app_id;
     private $mch_id;
     private $secret;
@@ -32,9 +32,10 @@ class Client implements ClientInterface {
 
     /**
      * @param array $config
+     *
      * @return ITC\Weixin\Payment\Client
      */
-    public static function instance(array $config=[])
+    public static function instance(array $config = [])
     {
         $client = new static($config);
 
@@ -47,7 +48,7 @@ class Client implements ClientInterface {
     /**
      * @param array $config
      */
-    public function __construct(array $config=[])
+    public function __construct(array $config = [])
     {
         $this->app_id = $config['app_id'];
         $this->mch_id = $config['mch_id'];
@@ -60,7 +61,6 @@ class Client implements ClientInterface {
 
     /**
      * @param Psr\Log\LoggerInterface $logger
-     * @return void
      */
     public function setLogger(LoggerInterface $logger)
     {
@@ -69,12 +69,12 @@ class Client implements ClientInterface {
 
     /**
      * @param void
+     *
      * @return Psr\Log\LoggerInterface $logger
      */
     public function getLogger()
     {
-        if (!$this->logger)
-        {
+        if (!$this->logger) {
             $this->logger = new DummyLogger();
         }
 
@@ -83,7 +83,6 @@ class Client implements ClientInterface {
 
     /**
      * @param GuzzleHttp\ClientInterface $client
-     * @return void
      */
     public function setHttpClient(HttpClientInterface $client)
     {
@@ -92,12 +91,12 @@ class Client implements ClientInterface {
 
     /**
      * @param void
+     *
      * @return GuzzleHttp\ClientInterface
      */
     public function getHttpClient()
     {
-        if (!$this->http)
-        {
+        if (!$this->http) {
             $this->setHttpClient(new HttpClient());
         }
 
@@ -106,7 +105,6 @@ class Client implements ClientInterface {
 
     /**
      * @param ITC\Weixin\Contracts\HashGenerator $hashgen
-     * @return void
      */
     public function setHashGenerator(HashGeneratorInterface $hashgen)
     {
@@ -115,12 +113,12 @@ class Client implements ClientInterface {
 
     /**
      * @param void
+     *
      * @return ITC\Weixin\Contracts\HashGenerator
      */
     public function getHashGenerator()
     {
-        if (!$this->hashgen)
-        {
+        if (!$this->hashgen) {
             $this->setHashGenerator(new HashGenerator($this->secret));
         }
 
@@ -129,7 +127,6 @@ class Client implements ClientInterface {
 
     /**
      * @param ITC\Weixin\Contracts\Serializer
-     * @return void
      */
     public function setSerializer(SerializerInterface $serializer)
     {
@@ -138,12 +135,12 @@ class Client implements ClientInterface {
 
     /**
      * @param void
+     *
      * @return ITC\Weixin\Contracts\SerializerInterface
      */
     public function getSerializer()
     {
-        if (!$this->serializer)
-        {
+        if (!$this->serializer) {
             $this->setSerializer(new XmlSerializer());
         }
 
@@ -154,23 +151,24 @@ class Client implements ClientInterface {
      * @param void
      * @codeCoverageIgnore
      */
-    public function secure($secure=true)
+    public function secure($secure = true)
     {
         $this->secure = $secure;
+
         return $this;
     }
 
     /**
      * @param mixed $data
+     *
      * @return ITC\Weixin\Payment\Contracts\Message $message
      */
-    public function message($data=null)
+    public function message($data = null)
     {
         $serializer = $this->getSerializer();
         $hashgen = $this->getHashGenerator();
 
-        if (is_string($data) && $data)
-        {
+        if (is_string($data) && $data) {
             $data = $serializer->unserialize($data);
         }
 
@@ -183,9 +181,10 @@ class Client implements ClientInterface {
 
     /**
      * @param mixed $data
+     *
      * @return ITC\Weixin\Payment\Contracts\Message $message
      */
-    public function createMessage($data=null)
+    public function createMessage($data = null)
     {
         $log = $this->getLogger();
         $log->warning(__METHOD__.' is deprecated; use Client::message instead');
@@ -194,12 +193,13 @@ class Client implements ClientInterface {
     }
 
     /**
-     * @param string $url
+     * @param string                               $url
      * @param ITC\Weixin\Payment\Contracts\Message $message
-     * @param Psr\Http\Message\ResponseInterface $response
+     * @param Psr\Http\Message\ResponseInterface   $response
+     *
      * @return ITC\Weixin\Payment\Contracts\Message
      */
-    public function post($url, MessageInterface $message, HttpResponseInterface &$response=null)
+    public function post($url, MessageInterface $message, HttpResponseInterface &$response = null)
     {
         $log = $this->getLogger();
         $serializer = $this->getSerializer();
@@ -209,18 +209,17 @@ class Client implements ClientInterface {
         $reqbody = $serializer->serialize($message->toArray());
 
         // send a POST request (it's always a POST)
-        $response = $this->getHttpClient()->post($url, ['body'=>$reqbody]);
+        $response = $this->getHttpClient()->post($url, ['body' => $reqbody]);
         $status = (int) $response->getStatusCode();
         $resbody = $response->getBody();
 
-        $log->info("[$status] POST $url", ['method'=>__METHOD__]);
-        $log->debug('  req: '.$reqbody, ['method'=>__METHOD__]);
-        $log->debug('  res: '.$resbody, ['method'=>__METHOD__]);
+        $log->info("[$status] POST $url", ['method' => __METHOD__]);
+        $log->debug('  req: '.$reqbody, ['method' => __METHOD__]);
+        $log->debug('  res: '.$resbody, ['method' => __METHOD__]);
 
-        if ($status < 200 || $status >= 300)
-        {
+        if ($status < 200 || $status >= 300) {
             $msg = 'got unexpected HTTP response status '.$status;
-            $log->error($msg, ['method'=>__METHOD__]);
+            $log->error($msg, ['method' => __METHOD__]);
             throw new UnexpectedValueException($msg);
         }
 
@@ -230,14 +229,15 @@ class Client implements ClientInterface {
     }
 
     /**
-     * Returns the Command identified by the supplied name
+     * Returns the Command identified by the supplied name.
+     *
      * @param string $name
+     *
      * @return ITC\Weixin\Payment\Contracts\Command
      */
     public function command($name)
     {
-        if (!isset($this->commands[$name]))
-        {
+        if (!isset($this->commands[$name])) {
             throw new OutOfBoundsException('unknown command: '.$name);
         }
 
@@ -245,9 +245,9 @@ class Client implements ClientInterface {
     }
 
     /**
-     * Registers a Command on the client instance
+     * Registers a Command on the client instance.
+     *
      * @param ITC\Weixin\Payment\Contracts\Command $command
-     * @return void
      */
     public function register(CommandInterface $command)
     {
@@ -257,9 +257,9 @@ class Client implements ClientInterface {
     }
 
     /**
-     * Prepares a message for outbound transport
+     * Prepares a message for outbound transport.
+     *
      * @param ITC\Weixin\Payment\Contracts\Message $message
-     * @return void
      */
     private function prepare(MessageInterface $message)
     {
@@ -271,9 +271,10 @@ class Client implements ClientInterface {
 
     /**
      * @param array $query
+     *
      * @return JsonSerializable
      */
-    public function jsapize(array $query, $nonce=null, $timestamp=null)
+    public function jsapize(array $query, $nonce = null, $timestamp = null)
     {
         $message = $this->createMessage();
 
@@ -288,8 +289,10 @@ class Client implements ClientInterface {
     }
 
     /**
-     * Generates a pseudo-random nonce string
+     * Generates a pseudo-random nonce string.
+     *
      * @param void
+     *
      * @return string
      */
     protected static function nonce()
@@ -297,7 +300,7 @@ class Client implements ClientInterface {
         $data = openssl_random_pseudo_bytes(16);
         $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
         $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
+
         return bin2hex($data);
     }
 }
-
