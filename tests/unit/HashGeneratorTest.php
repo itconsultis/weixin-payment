@@ -1,10 +1,12 @@
-<?php namespace ITC\Weixin\Payment\Test;
+<?php
+
+namespace ITC\Weixin\Payment\Test;
 
 use ITC\Weixin\Payment\Contracts\HashGenerator as HashGeneratorInterface;
 use ITC\Weixin\Payment\HashGenerator;
 
-class HashGeneratorTest extends TestCase {
-
+class HashGeneratorTest extends TestCase
+{
     public function setUp()
     {
         parent::setUp();
@@ -52,5 +54,4 @@ class HashGeneratorTest extends TestCase {
 
         $this->assertSame($hash1, $hash2);
     }
-
 }

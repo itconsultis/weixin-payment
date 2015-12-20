@@ -1,4 +1,6 @@
-<?php namespace ITC\Weixin\Payment\Test;
+<?php
+
+namespace ITC\Weixin\Payment\Test;
 
 use InvalidArgumentException;
 use Mockery;
@@ -7,8 +9,8 @@ use ITC\Weixin\Payment\Contracts\Client as ClientInterface;
 use ITC\Weixin\Payment\Contracts\Message as MessageInterface;
 use ITC\Weixin\Payment\Command\CreateUnifiedOrder;
 
-class CreateUnifiedOrderTest extends TestCase {
-
+class CreateUnifiedOrderTest extends TestCase
+{
     public function setUp()
     {
         parent::setUp();
@@ -64,8 +66,7 @@ class CreateUnifiedOrderTest extends TestCase {
 
     public function test_parameter_validation()
     {
-        $create_params = function()
-        {
+        $create_params = function () {
             return [
                 'out_trade_no' => 'DOMAIN_ORDER_ID',
                 'body' => 'ACME Order DOMAIN_ORDER_ID',
@@ -77,18 +78,14 @@ class CreateUnifiedOrderTest extends TestCase {
             ];
         };
 
-        foreach (['out_trade_no', 'body', 'total_fee', 'notify_url', 'trade_type'] as $required)
-        {
+        foreach (['out_trade_no', 'body', 'total_fee', 'notify_url', 'trade_type'] as $required) {
             $params = $create_params();
             unset($params[$required]);
 
-            try
-            {
+            try {
                 $this->command->execute($params);
                 $this->fail();
-            }
-            catch (InvalidArgumentException $e)
-            {
+            } catch (InvalidArgumentException $e) {
                 continue;
             }
         }
@@ -99,15 +96,11 @@ class CreateUnifiedOrderTest extends TestCase {
 
         unset($params['openid']);
 
-        try
-        {
+        try {
             $this->command->execute($params);
             $this->fail();
-        }
-        catch (InvalidArgumentException $e)
-        {
+        } catch (InvalidArgumentException $e) {
             // test passed
         }
     }
-
 }

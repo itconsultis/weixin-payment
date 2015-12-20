@@ -1,15 +1,17 @@
-<?php namespace ITC\Weixin\Payment;
+<?php
+
+namespace ITC\Weixin\Payment;
 
 use ITC\Weixin\Payment\Contracts\HashGenerator as HashGeneratorInterface;
 
-
 /**
- * WeChat request signature generator
+ * WeChat request signature generator.
  */
-class HashGenerator implements HashGeneratorInterface {
-
+class HashGenerator implements HashGeneratorInterface
+{
     /**
-     * The hash secret
+     * The hash secret.
+     *
      * @var string
      */
     private $secret;
@@ -23,8 +25,10 @@ class HashGenerator implements HashGeneratorInterface {
     }
 
     /**
-     * Satisfies HashGeneratorInterface#hash
+     * Satisfies HashGeneratorInterface#hash.
+     *
      * @param array $data
+     *
      * @return string
      */
     public function hash(array $data)
@@ -33,12 +37,11 @@ class HashGenerator implements HashGeneratorInterface {
 
         $pairs = [];
 
-        foreach ($data as $key => $value)
-        {
-            $pairs[] = $key . '=' . $value;
+        foreach ($data as $key => $value) {
+            $pairs[] = $key.'='.$value;
         }
 
-        $pairs[] = 'key=' . $this->secret;
+        $pairs[] = 'key='.$this->secret;
         $query_string = implode('&', $pairs);
 
         return strtoupper(md5($query_string));

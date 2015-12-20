@@ -1,4 +1,6 @@
-<?php namespace ITC\Weixin\Payment\Test;
+<?php
+
+namespace ITC\Weixin\Payment\Test;
 
 use InvalidArgumentException;
 use Mockery;
@@ -7,8 +9,8 @@ use ITC\Weixin\Payment\Contracts\Client as ClientInterface;
 use ITC\Weixin\Payment\Contracts\Message as MessageInterface;
 use ITC\Weixin\Payment\Command\OrderQuery;
 
-class OrderQueryTest extends TestCase {
-
+class OrderQueryTest extends TestCase
+{
     public function setUp()
     {
         parent::setUp();
@@ -53,17 +55,13 @@ class OrderQueryTest extends TestCase {
 
     public function test_parameter_validation()
     {
-        try
-        {
+        try {
             $this->command->execute([]);
-        }
-        catch (InvalidArgumentException $e)
-        {
+        } catch (InvalidArgumentException $e) {
             // test passed
             return;
         }
 
         $this->fail();
     }
-
 }
