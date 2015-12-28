@@ -39,8 +39,9 @@ class Client implements ClientInterface
     {
         $client = new static($config);
 
-        $client->register(new Command\CreateUnifiedOrder());
-        $client->register(new Command\OrderQuery());
+        $client->register(Command\CreateUnifiedOrder::class);
+        $client->register(Command\OrderQuery::class);
+        $client->register(Command\SendRedpack::class);
 
         return $client;
     }

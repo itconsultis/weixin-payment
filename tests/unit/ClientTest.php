@@ -213,6 +213,7 @@ class ClientTest extends TestCase
         $commands = [
             'pay/unifiedorder',
             'pay/orderquery',
+            'mmpaymkttransfers/sendredpack',
         ];
 
         foreach ($commands as $name) {
