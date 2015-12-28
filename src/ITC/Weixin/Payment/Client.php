@@ -270,10 +270,10 @@ class Client implements ClientInterface
         } elseif (is_string($command) && class_exists($command)) {
             $interfaces = class_implements($command);
             if (!$interfaces || !in_array(CommandInterface::class, $interfaces)) {
-                throw new OutOfBoundsException('unknown command: '.$name);
+                throw new OutOfBoundsException('unknown command: '.$command);
             }
         } else {
-            throw new OutOfBoundsException('unknown command: '.$name);
+            throw new OutOfBoundsException('unknown command');
         }
 
         $this->commands[$command::name()] = $command;
