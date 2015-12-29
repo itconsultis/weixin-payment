@@ -99,7 +99,10 @@ class Client implements ClientInterface
     public function getHttpClient()
     {
         if (!$this->http) {
-            $this->setHttpClient(new HttpClient());
+            $this->setHttpClient(new HttpClient([
+                'ssl_key' => $this->public_key_path,
+                'cert' => $this->private_key_path,
+            ]));
         }
 
         return $this->http;
