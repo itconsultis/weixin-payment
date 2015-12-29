@@ -7,7 +7,7 @@ use Mockery;
 use ITC\Weixin\Payment\Contracts\Command as CommandInterface;
 use ITC\Weixin\Payment\Contracts\Client as ClientInterface;
 use ITC\Weixin\Payment\Contracts\Message as MessageInterface;
-use ITC\Weixin\Payment\Command\SendRedpack;
+use ITC\Weixin\Payment\Command\CashCoupon\SendRedpack;
 
 class SendRedpackTest extends TestCase
 {

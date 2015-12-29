@@ -1,6 +1,7 @@
 <?php
 
-namespace ITC\Weixin\Payment\Command;
+namespace ITC\Weixin\Payment\Command\CashCoupon;
+use ITC\Weixin\Payment\Command\Command;
 
 class SendRedpack extends Command
 {
