@@ -214,6 +214,7 @@ class ClientTest extends TestCase
             'pay/unifiedorder',
             'pay/orderquery',
             'mmpaymkttransfers/sendredpack',
+            'mmpaymkttransfers/gethbinfo',
         ];
 
         foreach ($commands as $name) {

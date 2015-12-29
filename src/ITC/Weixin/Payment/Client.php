@@ -42,6 +42,7 @@ class Client implements ClientInterface
         $client->register(Command\CreateUnifiedOrder::class);
         $client->register(Command\OrderQuery::class);
         $client->register(Command\CashCoupon\SendRedpack::class);
+        $client->register(Command\CashCoupon\GetHbinfo::class);
 
         return $client;
     }
