@@ -162,10 +162,11 @@ class Client implements ClientInterface
 
     /**
      * @param mixed $data
+     * @param array $required
      *
      * @return ITC\Weixin\Payment\Contracts\Message $message
      */
-    public function message($data = null)
+    public function message($data = null, $required = null)
     {
         $serializer = $this->getSerializer();
         $hashgen = $this->getHashGenerator();
@@ -178,20 +179,27 @@ class Client implements ClientInterface
         $message->setSerializer($serializer);
         $message->setHashGenerator($hashgen);
 
+        if ($required) {
+            foreach ($required as $k => $v) {
+                $message->set($v, $this->$k);
+            }
+        }
+
         return $message;
     }
 
     /**
      * @param mixed $data
+     * @param array $required
      *
      * @return ITC\Weixin\Payment\Contracts\Message $message
      */
-    public function createMessage($data = null)
+    public function createMessage($data = null, $required = null)
     {
         $log = $this->getLogger();
         $log->warning(__METHOD__.' is deprecated; use Client::message instead');
 
-        return $this->message($data);
+        return $this->message($data, $required);
     }
 
     /**
@@ -287,8 +295,6 @@ class Client implements ClientInterface
      */
     private function prepare(MessageInterface $message)
     {
-        $message->set('appid', $this->app_id);
-        $message->set('mch_id', $this->mch_id);
         $message->get('nonce_str') || $message->set('nonce_str', static::nonce());
         $message->sign();
     }

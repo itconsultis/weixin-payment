@@ -143,7 +143,10 @@ class ClientTest extends TestCase
         ]);
 
         // pre-request expectations
-        $request_message = $client->message($initial_data);
+        $request_message = $client->message($initial_data, [
+            'app_id' => 'appid',
+            'mch_id' => 'mch_id',
+        ]);
         $hashgen->shouldReceive('hash')->once()->andReturn($signature);
         $serializer->shouldReceive('serialize')->once()->withArgs([$request_data])->andReturn('SERIALIZED_DATA');
 

@@ -53,7 +53,7 @@ interface Client extends MessageFactory
      *
      * @return ITC\Weixin\Payment\Contracts\Message
      */
-    public function message($data = null);
+    public function message($data = null, $required = null);
 
     /**
      * @param array  $query

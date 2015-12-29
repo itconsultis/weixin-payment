@@ -1,6 +1,7 @@
 <?php
 
 namespace ITC\Weixin\Payment\Command\CashCoupon;
+
 use ITC\Weixin\Payment\Command\Command;
 
 class SendRedpack extends Command
@@ -15,6 +16,19 @@ class SendRedpack extends Command
     public static function name()
     {
         return 'mmpaymkttransfers/sendredpack';
+    }
+
+    /**
+     * @param void
+     *
+     * @return array
+     */
+    public static function getRequired()
+    {
+        return [
+            'app_id' => 'wxappid',
+            'mch_id' => 'mch_id',
+        ];
     }
 
     /**

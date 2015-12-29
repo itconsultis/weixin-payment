@@ -52,7 +52,7 @@ class SendRedpackTest extends TestCase
         $request_message = Mockery::mock(MessageInterface::class);
         $response_message = Mockery::mock(MessageInterface::class);
 
-        $client->shouldReceive('createMessage')->withArgs([$params])->andReturn($request_message);
+        $client->shouldReceive('createMessage')->withArgs([$params, SendRedpack::getRequired()])->andReturn($request_message);
 
         $client->shouldReceive('post')->withArgs([$api_endpoint, $request_message])
                                       ->andReturn($response_message);
