@@ -14,6 +14,7 @@ use ITC\Weixin\Payment\Contracts\HashGenerator as HashGeneratorInterface;
 use ITC\Weixin\Payment\Contracts\Client as ClientInterface;
 use ITC\Weixin\Payment\Contracts\Message as MessageInterface;
 use ITC\Weixin\Payment\Client;
+use ITC\Weixin\Payment\Command\Command;
 
 class ClientTest extends TestCase
 {
@@ -65,6 +66,56 @@ class ClientTest extends TestCase
         $client->register($command);
 
         $this->assertSame($command, $client->command('arbitrary-command-name'));
+    }
+
+    public function test_string_command_access()
+    {
+        $client = $this->client;
+
+        $command = Mockery::mock(CommandInterface::class)->makePartial();
+        $command->shouldReceive('name')->once()->andReturn('arbitrary-command-name');
+        $command->shouldReceive('make')->once()->andReturn($command);
+        $command->shouldReceive('setClient')->once()->withArgs([$client]);
+
+        $client->register(get_class($command));
+
+        $this->assertSame($command, $client->command('arbitrary-command-name'));
+    }
+
+    /**
+     * @expectedException OutOfBoundsException
+     */
+    public function test_command_access_execption()
+    {
+        $client = $this->client;
+        $client->command('not-exist');
+    }
+
+    /**
+     * @expectedException OutOfBoundsException
+     */
+    public function test_command_register_invalid_type_execption()
+    {
+        $client = $this->client;
+        $client->register(array());
+    }
+
+    /**
+     * @expectedException OutOfBoundsException
+     */
+    public function test_command_register_invalid_classname_execption()
+    {
+        $client = $this->client;
+        $client->register('not-exist');
+    }
+
+    /**
+     * @expectedException OutOfBoundsException
+     */
+    public function test_command_register_invalid_class_execption()
+    {
+        $client = $this->client;
+        $client->register(\StdClass::class);
     }
 
     public function test_post_success_case()
@@ -162,6 +213,8 @@ class ClientTest extends TestCase
         $commands = [
             'pay/unifiedorder',
             'pay/orderquery',
+            'mmpaymkttransfers/sendredpack',
+            'mmpaymkttransfers/gethbinfo',
         ];
 
         foreach ($commands as $name) {

@@ -7,16 +7,16 @@ use Mockery;
 use ITC\Weixin\Payment\Contracts\Command as CommandInterface;
 use ITC\Weixin\Payment\Contracts\Client as ClientInterface;
 use ITC\Weixin\Payment\Contracts\Message as MessageInterface;
-use ITC\Weixin\Payment\Command\CreateUnifiedOrder;
+use ITC\Weixin\Payment\Command\CashCoupon\GetHbinfo;
 
-class CreateUnifiedOrderTest extends TestCase
+class GetHbinfoTest extends TestCase
 {
     public function setUp()
     {
         parent::setUp();
 
         $this->client = Mockery::mock(ClientInterface::class)->makePartial();
-        $this->command = new CreateUnifiedOrder($this->client);
+        $this->command = new GetHbinfo($this->client);
     }
 
     public function test_interface_compliance()
@@ -26,8 +26,7 @@ class CreateUnifiedOrderTest extends TestCase
 
     public function test_creation()
     {
-        $command = CreateUnifiedOrder::make();
-        $this->assertTrue($this->command instanceof CreateUnifiedOrder);
+        $this->assertTrue($this->command instanceof GetHbinfo);
     }
 
     public function test_execute()
@@ -39,14 +38,8 @@ class CreateUnifiedOrderTest extends TestCase
         $command->setUrl($api_endpoint);
 
         $params = [
-            'appid' => 'WEIXIN_APP_ID',
-            'out_trade_no' => 'DOMAIN_ORDER_ID',
-            'body' => 'ACME Order DOMAIN_ORDER_ID',
-            'total_fee' => 100,
-            'spbill_create_ip' => '127.0.0.1',
-            'notify_url' => 'http://mywebsite.com/payment/weixin/notify',
-            'trade_type' => 'JSAPI',
-            'openid' => 'wx_932509283mkjsdfijaef',
+            'mch_billno' => '10000098201411111234567890',
+            'bill_type' => 'MCHT',
         ];
 
         $request_message = Mockery::mock(MessageInterface::class);
@@ -64,7 +57,7 @@ class CreateUnifiedOrderTest extends TestCase
 
     public function test_passes_if_getUrl_returns_default()
     {
-        $expected = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
+        $expected = 'https://api.mch.weixin.qq.com/mmpaymkttransfers/gethbinfo';
         $actual = $this->command->getUrl();
 
         $this->assertEquals($expected, $actual);
@@ -74,17 +67,12 @@ class CreateUnifiedOrderTest extends TestCase
     {
         $create_params = function () {
             return [
-                'out_trade_no' => 'DOMAIN_ORDER_ID',
-                'body' => 'ACME Order DOMAIN_ORDER_ID',
-                'total_fee' => 100,
-                'spbill_create_ip' => '127.0.0.1',
-                'notify_url' => 'http://mywebsite.com/payment/weixin/notify',
-                'trade_type' => 'JSAPI',
-                'openid' => 'wx_932509283mkjsdfijaef',
+                'mch_billno' => '10000098201411111234567890',
+                'bill_type' => 'MCHT',
             ];
         };
 
-        foreach (['out_trade_no', 'body', 'total_fee', 'notify_url', 'trade_type'] as $required) {
+        foreach (['mch_billno', 'bill_type'] as $required) {
             $params = $create_params();
             unset($params[$required]);
 
@@ -95,18 +83,32 @@ class CreateUnifiedOrderTest extends TestCase
                 continue;
             }
         }
+    }
 
-        // set trade_type to "JSAPI" but omit openid
+    public function test_parameter_validation_invalid_bill_type()
+    {
+        $create_params = function () {
+            return [
+                'mch_billno' => '10000098201411111234567890',
+                'bill_type' => 'MCHT',
+            ];
+        };
 
-        $params = $create_params();
+        $invalid_params = [
+            'mch_billno' => str_pad('', 33, '0'),
+            'bill_type' => 'API',
+        ];
 
-        unset($params['openid']);
+        foreach ($invalid_params as $key => $val) {
+            $params = $create_params();
+            $params[$key] = $val;
 
-        try {
-            $this->command->execute($params);
-            $this->fail();
-        } catch (InvalidArgumentException $e) {
-            // test passed
+            try {
+                $this->command->execute($params);
+                $this->fail();
+            } catch (InvalidArgumentException $e) {
+                continue;
+            }
         }
     }
 }

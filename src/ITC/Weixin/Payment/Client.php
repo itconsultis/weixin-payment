@@ -39,8 +39,10 @@ class Client implements ClientInterface
     {
         $client = new static($config);
 
-        $client->register(new Command\CreateUnifiedOrder());
-        $client->register(new Command\OrderQuery());
+        $client->register(Command\CreateUnifiedOrder::class);
+        $client->register(Command\OrderQuery::class);
+        $client->register(Command\CashCoupon\SendRedpack::class);
+        $client->register(Command\CashCoupon\GetHbinfo::class);
 
         return $client;
     }
@@ -241,19 +243,41 @@ class Client implements ClientInterface
             throw new OutOfBoundsException('unknown command: '.$name);
         }
 
-        return $this->commands[$name];
+        if (is_object($this->commands[$name])) {
+            return $this->commands[$name];
+        }
+
+        if (is_string($this->commands[$name])) {
+            $command = $this->commands[$name];
+            $command = $command::make();
+            $command->setClient($this);
+            $this->commands[$name] = $command;
+
+            return $this->commands[$name];
+        }
+
+        throw new OutOfBoundsException('unknown command: '.$name);
     }
 
     /**
      * Registers a Command on the client instance.
      *
-     * @param ITC\Weixin\Payment\Contracts\Command $command
+     * @param ITC\Weixin\Payment\Contracts\Command|string $command
      */
-    public function register(CommandInterface $command)
+    public function register($command)
     {
-        $command->setClient($this);
+        if (is_object($command) && is_subclass_of($command, CommandInterface::class)) {
+            $command->setClient($this);
+        } elseif (is_string($command) && class_exists($command)) {
+            $interfaces = class_implements($command);
+            if (!$interfaces || !in_array(CommandInterface::class, $interfaces)) {
+                throw new OutOfBoundsException('unknown command: '.$command);
+            }
+        } else {
+            throw new OutOfBoundsException('unknown command');
+        }
 
-        $this->commands[$command->name()] = $command;
+        $this->commands[$command::name()] = $command;
     }
 
     /**
