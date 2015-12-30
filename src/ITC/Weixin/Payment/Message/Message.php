@@ -16,6 +16,11 @@ class Message implements MessageInterface
     private $data = [];
 
     /**
+     * @var array
+     */
+    private $orgData = [];
+
+    /**
      * @var ITC\Weixin\Payment\Contracts\HashGenerator
      */
     private $hashgen;
@@ -48,9 +53,13 @@ class Message implements MessageInterface
      *
      * @return mixed
      */
-    public function get($attr)
+    public function get($attr, $origin = false)
     {
-        return isset($this->data[$attr]) ? $this->data[$attr] : null;
+        if ($origin) {
+            return isset($this->orgData[$attr]) ? $this->orgData[$attr] : null;
+        } else {
+            return isset($this->data[$attr]) ? $this->data[$attr] : null;
+        }
     }
 
     /**
@@ -59,6 +68,7 @@ class Message implements MessageInterface
      */
     public function set($attr, $value)
     {
+        $this->orgData[$attr] = $value;
         if (is_array($value)) {
             $value = $this->createPseudoQuery($value);
         }
@@ -70,6 +80,7 @@ class Message implements MessageInterface
      */
     public function clear($attr)
     {
+        unset($this->orgData[$attr]);
         unset($this->data[$attr]);
     }
 
@@ -104,9 +115,13 @@ class Message implements MessageInterface
      *
      * @return array
      */
-    public function toArray()
+    public function toArray($origin = false)
     {
-        return $this->data;
+        if ($origin) {
+            return $this->orgData;
+        } else {
+            return $this->data;
+        }
     }
 
     /**
@@ -121,7 +136,7 @@ class Message implements MessageInterface
 
     /**
      * {i: 'am', not: 'url encoded'}  -> "i=am&not=url encoded".
-     * 
+     *
      * @param array $data
      *
      * @return string
