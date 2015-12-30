@@ -146,7 +146,11 @@ class Message implements MessageInterface
         $tokens = [];
 
         foreach ($data as $key => $value) {
-            $tokens[] = $key.'='.$value;
+            if (is_array($value)) {
+                $tokens[] = $this->createPseudoQuery($value);
+            } else {
+                $tokens[] = $key.'='.$value;
+            }
         }
 
         return implode('&', $tokens);

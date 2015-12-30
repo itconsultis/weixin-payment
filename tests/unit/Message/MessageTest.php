@@ -154,6 +154,10 @@ class MessageTest extends TestCase
         $message->set('package', ['foo' => 1, 'bar' => 'two']);
         $this->assertEquals('foo=1&bar=two', $message->get('package'));
         $this->assertEquals(['foo'=> 1, 'bar' => 'two'], $message->get('package', true));
+
+        $message->set('package', ['foo' => 1, 'bar' => ['two' => 'three']]);
+        $this->assertEquals('foo=1&two=three', $message->get('package'));
+        $this->assertEquals(['foo'=> 1, 'bar' => ['two' => 'three']], $message->get('package', true));
     }
 
     public function test_fails_if_query_stringified_value_is_url_encoded()
