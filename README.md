@@ -197,6 +197,15 @@ object that has an `execute` method which returns a `Message`.
         'act_name' => '猜灯谜抢红包活动',
         'remark' => '猜越多得越多，快来抢！',
     ]);
+   ```
+
+- `mmpaymkttransfers/gethbinfo` [spec](https://pay.weixin.qq.com/wiki/doc/api/cash_coupon.php?chapter=13_7)
+
+    ```php
+    $result = $client->command('mmpaymkttransfers/gethbinfo')->execute([
+        'mch_billno' => '10000098201411111234567890',
+        'bill_type' => 'MCHT',
+    ]);
     ```
 
 ## Installation
