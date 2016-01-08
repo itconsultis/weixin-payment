@@ -60,6 +60,10 @@ class MessageTest extends TestCase
         $this->assertNull($message->get('foo'));
 
         $this->assertEquals(['bar' => 'two'], $message->toArray());
+
+        $message->set('bar', ['two' => 'three']);
+        $this->assertEquals(['bar' => 'two=three'], $message->toArray());
+        $this->assertEquals(['bar' => ['two' => 'three']], $message->toArray(true));
     }
 
     public function test_signing()
@@ -149,12 +153,18 @@ class MessageTest extends TestCase
 
         $message->set('package', ['foo' => 1, 'bar' => 'two']);
         $this->assertEquals('foo=1&bar=two', $message->get('package'));
+        $this->assertEquals(['foo'=> 1, 'bar' => 'two'], $message->get('package', true));
+
+        $message->set('package', ['foo' => 1, 'bar' => ['two' => 'three']]);
+        $this->assertEquals('foo=1&two=three', $message->get('package'));
+        $this->assertEquals(['foo'=> 1, 'bar' => ['two' => 'three']], $message->get('package', true));
     }
 
     public function test_fails_if_query_stringified_value_is_url_encoded()
     {
         $message = new Message(['package' => ['wtf' => 'this value contains whitespace']]);
         $this->assertEquals('wtf=this value contains whitespace', $message->get('package'));
+        $this->assertEquals(['wtf' => 'this value contains whitespace'], $message->get('package', true));
     }
 
     public function test_fails_if_message_is_not_signed_with_reference_signature()

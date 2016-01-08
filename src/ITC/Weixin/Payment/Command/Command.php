@@ -12,6 +12,14 @@ abstract class Command implements CommandInterface
     protected $client;
 
     /**
+     * @return ITC\Weixin\Payment\Contracts\Command
+     */
+    public static function make()
+    {
+        return new static();
+    }
+
+    /**
      * @param array $params
      * @param array $errors
      */
@@ -81,6 +89,19 @@ abstract class Command implements CommandInterface
     }
 
     /**
+     * @param void
+     *
+     * @return array
+     */
+    public static function getRequired()
+    {
+        return [
+            'app_id' => 'appid',
+            'mch_id' => 'mch_id',
+        ];
+    }
+
+    /**
      * Satisfies ITC\Weixin\Payment\Contracts\Command#execute.
      *
      * @param array $params
@@ -106,7 +127,7 @@ abstract class Command implements CommandInterface
             throw new InvalidArgumentException($msg);
         }
 
-        $message = $this->client->createMessage($params);
+        $message = $this->client->createMessage($params, static::getRequired());
 
         return $this->client->post($this->getUrl(), $message);
     }
