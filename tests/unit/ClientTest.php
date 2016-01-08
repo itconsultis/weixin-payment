@@ -85,7 +85,7 @@ class ClientTest extends TestCase
     /**
      * @expectedException OutOfBoundsException
      */
-    public function test_command_access_execption()
+    public function test_command_access_exception()
     {
         $client = $this->client;
         $client->command('not-exist');
@@ -94,7 +94,7 @@ class ClientTest extends TestCase
     /**
      * @expectedException OutOfBoundsException
      */
-    public function test_command_register_invalid_type_execption()
+    public function test_command_register_invalid_type_exception()
     {
         $client = $this->client;
         $client->register(array());
@@ -103,7 +103,7 @@ class ClientTest extends TestCase
     /**
      * @expectedException OutOfBoundsException
      */
-    public function test_command_register_invalid_classname_execption()
+    public function test_command_register_invalid_classname_exception()
     {
         $client = $this->client;
         $client->register('not-exist');
@@ -112,7 +112,7 @@ class ClientTest extends TestCase
     /**
      * @expectedException OutOfBoundsException
      */
-    public function test_command_register_invalid_class_execption()
+    public function test_command_register_invalid_class_exception()
     {
         $client = $this->client;
         $client->register(\StdClass::class);
