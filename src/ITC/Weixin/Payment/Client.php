@@ -39,8 +39,10 @@ class Client implements ClientInterface
     {
         $client = new static($config);
 
-        $client->register(new Command\CreateUnifiedOrder());
-        $client->register(new Command\OrderQuery());
+        $client->register(Command\CreateUnifiedOrder::class);
+        $client->register(Command\OrderQuery::class);
+        $client->register(Command\CashCoupon\SendRedpack::class);
+        $client->register(Command\CashCoupon\GetHbinfo::class);
 
         return $client;
     }
@@ -97,7 +99,10 @@ class Client implements ClientInterface
     public function getHttpClient()
     {
         if (!$this->http) {
-            $this->setHttpClient(new HttpClient());
+            $this->setHttpClient(new HttpClient([
+                'ssl_key' => $this->public_key_path,
+                'cert' => $this->private_key_path,
+            ]));
         }
 
         return $this->http;
@@ -160,10 +165,11 @@ class Client implements ClientInterface
 
     /**
      * @param mixed $data
+     * @param array $required
      *
      * @return ITC\Weixin\Payment\Contracts\Message $message
      */
-    public function message($data = null)
+    public function message($data = null, $required = null)
     {
         $serializer = $this->getSerializer();
         $hashgen = $this->getHashGenerator();
@@ -176,20 +182,27 @@ class Client implements ClientInterface
         $message->setSerializer($serializer);
         $message->setHashGenerator($hashgen);
 
+        if ($required) {
+            foreach ($required as $k => $v) {
+                $message->set($v, $this->$k);
+            }
+        }
+
         return $message;
     }
 
     /**
      * @param mixed $data
+     * @param array $required
      *
      * @return ITC\Weixin\Payment\Contracts\Message $message
      */
-    public function createMessage($data = null)
+    public function createMessage($data = null, $required = null)
     {
         $log = $this->getLogger();
         $log->warning(__METHOD__.' is deprecated; use Client::message instead');
 
-        return $this->message($data);
+        return $this->message($data, $required);
     }
 
     /**
@@ -241,19 +254,41 @@ class Client implements ClientInterface
             throw new OutOfBoundsException('unknown command: '.$name);
         }
 
-        return $this->commands[$name];
+        if (is_object($this->commands[$name])) {
+            return $this->commands[$name];
+        }
+
+        if (is_string($this->commands[$name])) {
+            $command = $this->commands[$name];
+            $command = $command::make();
+            $command->setClient($this);
+            $this->commands[$name] = $command;
+
+            return $this->commands[$name];
+        }
+
+        throw new OutOfBoundsException('unknown command: '.$name);
     }
 
     /**
      * Registers a Command on the client instance.
      *
-     * @param ITC\Weixin\Payment\Contracts\Command $command
+     * @param ITC\Weixin\Payment\Contracts\Command|string $command
      */
-    public function register(CommandInterface $command)
+    public function register($command)
     {
-        $command->setClient($this);
+        if (is_object($command) && is_subclass_of($command, CommandInterface::class)) {
+            $command->setClient($this);
+        } elseif (is_string($command) && class_exists($command)) {
+            $interfaces = class_implements($command);
+            if (!$interfaces || !in_array(CommandInterface::class, $interfaces)) {
+                throw new OutOfBoundsException('unknown command: '.$command);
+            }
+        } else {
+            throw new OutOfBoundsException('unknown command');
+        }
 
-        $this->commands[$command->name()] = $command;
+        $this->commands[$command::name()] = $command;
     }
 
     /**
@@ -263,8 +298,6 @@ class Client implements ClientInterface
      */
     private function prepare(MessageInterface $message)
     {
-        $message->set('appid', $this->app_id);
-        $message->set('mch_id', $this->mch_id);
         $message->get('nonce_str') || $message->set('nonce_str', static::nonce());
         $message->sign();
     }

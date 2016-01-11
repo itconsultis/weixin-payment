@@ -1,11 +1,10 @@
 <?php
 
-namespace ITC\Weixin\Payment\Command;
+namespace ITC\Weixin\Payment\Command\CashCoupon;
 
-/**
- * see https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_2&index=4.
- */
-class OrderQuery extends Command
+use ITC\Weixin\Payment\Command\Command;
+
+class GetHbinfo extends Command
 {
     /**
      * Satisfies ITC\Weixin\Payment\Contracts\Command#name.
@@ -16,7 +15,7 @@ class OrderQuery extends Command
      */
     public static function name()
     {
-        return 'pay/orderquery';
+        return 'mmpaymkttransfers/gethbinfo';
     }
 
     /**
@@ -30,8 +29,12 @@ class OrderQuery extends Command
     {
         parent::validateParams($params, $errors);
 
-        if (empty($params['transaction_id']) && empty($params['out_trade_no'])) {
-            $errors[] = 'transaction_id and out_trade_no cannot *both* be empty';
+        if (strlen($params['mch_billno']) > 28) {
+            $errors[] = 'mch_billno must be mch_id + yyyymmdd + 10 digits unique string within a day.';
+        }
+
+        if ('MCHT' != $params['bill_type']) {
+            $errors[] = 'Unknown bill_type';
         }
     }
 
@@ -44,6 +47,9 @@ class OrderQuery extends Command
      */
     protected function getRequiredParams()
     {
-        return [];
+        return [
+            'mch_billno',
+            'bill_type',
+        ];
     }
 }

@@ -16,6 +16,11 @@ class Message implements MessageInterface
     private $data = [];
 
     /**
+     * @var array
+     */
+    private $raw = [];
+
+    /**
      * @var ITC\Weixin\Payment\Contracts\HashGenerator
      */
     private $hashgen;
@@ -45,12 +50,17 @@ class Message implements MessageInterface
 
     /**
      * @param string $attr
+     * @param bool $attr
      *
      * @return mixed
      */
-    public function get($attr)
+    public function get($attr, $raw = false)
     {
-        return isset($this->data[$attr]) ? $this->data[$attr] : null;
+        if ($raw) {
+            return isset($this->raw[$attr]) ? $this->raw[$attr] : null;
+        } else {
+            return isset($this->data[$attr]) ? $this->data[$attr] : null;
+        }
     }
 
     /**
@@ -59,9 +69,12 @@ class Message implements MessageInterface
      */
     public function set($attr, $value)
     {
+        $this->raw[$attr] = $value;
+
         if (is_array($value)) {
             $value = $this->createPseudoQuery($value);
         }
+
         $this->data[$attr] = $value;
     }
 
@@ -70,6 +83,7 @@ class Message implements MessageInterface
      */
     public function clear($attr)
     {
+        unset($this->raw[$attr]);
         unset($this->data[$attr]);
     }
 
@@ -79,7 +93,8 @@ class Message implements MessageInterface
     public function sign()
     {
         unset($this->data['sign']);
-        $this->data['sign'] = $this->getHashGenerator()->hash($this->data);
+        $signature = $this->getHashGenerator()->hash($this->data);
+        $this->data['sign'] = $signature;
     }
 
     /**
@@ -92,8 +107,9 @@ class Message implements MessageInterface
         if ($signature = $this->get('sign')) {
             $data = $this->data;
             unset($data['sign']);
+            $expected = $this->getHashGenerator()->hash($data);
 
-            return $signature === $this->getHashGenerator()->hash($data);
+            return $signature === $expected;
         }
 
         return false;
@@ -104,9 +120,9 @@ class Message implements MessageInterface
      *
      * @return array
      */
-    public function toArray()
+    public function toArray($raw = false)
     {
-        return $this->data;
+        return $raw ? $this->raw : $this->data;
     }
 
     /**
@@ -121,7 +137,7 @@ class Message implements MessageInterface
 
     /**
      * {i: 'am', not: 'url encoded'}  -> "i=am&not=url encoded".
-     * 
+     *
      * @param array $data
      *
      * @return string
@@ -131,7 +147,11 @@ class Message implements MessageInterface
         $tokens = [];
 
         foreach ($data as $key => $value) {
-            $tokens[] = $key.'='.$value;
+            if (is_array($value)) {
+                $tokens[] = $this->createPseudoQuery($value);
+            } else {
+                $tokens[] = $key.'='.$value;
+            }
         }
 
         return implode('&', $tokens);

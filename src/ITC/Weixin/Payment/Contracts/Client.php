@@ -28,20 +28,6 @@ interface Client extends MessageFactory
     public function secure($secure = true);
 
     /**
-     * @param string                               $url
-     * @param ITC\Weixin\Payment\Contracts\Message $message
-     * @param array                                $options
-     *
-     * @return array
-     */
-    public function post($url, Message $message, HttpResponse &$response = null);
-
-    /**
-     * @param ITC\Weixin\Payment\Contracts\Command $command
-     */
-    public function register(Command $command);
-
-    /**
      * @param string $name
      *
      * @return ITC\Weixin\Payment\Contracts\Command
@@ -53,7 +39,7 @@ interface Client extends MessageFactory
      *
      * @return ITC\Weixin\Payment\Contracts\Message
      */
-    public function message($data = null);
+    public function message($data = null, $required = null);
 
     /**
      * @param array  $query

@@ -136,14 +136,14 @@ object that has an `execute` method which returns a `Message`.
 - `pay/orderquery` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_2&index=4)
 
     ```php
+    // query a payment by wechat transaction id
     $result = $client->command('pay/orderquery')->execute([
-        'transaction_id' => '1008450740201411110005820873' 
+        'transaction_id' => '1008450740201411110005820873'
     ]);
 
-    // or supply out_trade_no
-
+    // or by domain order id ("out_trade_no")
     $result = $client->command('pay/orderquery')->execute([
-        'out_trade_no' => 'domain-order-id' 
+        'out_trade_no' => 'domain-order-id'
     ]);
     ```
 
@@ -183,6 +183,31 @@ object that has an `execute` method which returns a `Message`.
     $result = $client->command('tools/shorturl')->execute([/* ... */]);
     ```
 
+- `mmpaymkttransfers/sendredpack` [spec](https://pay.weixin.qq.com/wiki/doc/api/cash_coupon.php?chapter=13_5)
+
+    ```php
+    $result = $client->command('mmpaymkttransfers/sendredpack')->execute([
+        'mch_billno' => '10000098201411111234567890',
+        'send_name' => '天虹百货',
+        're_openid' => 'oxTWIuGaIt6gTKsQRLau2M0yL16E',
+        'total_amount' => 1000,
+        'total_num' => 1,
+        'client_ip' => '192.168.0.1',
+        'wishing' => '感谢您参加猜灯谜活动，祝您元宵节快乐！',
+        'act_name' => '猜灯谜抢红包活动',
+        'remark' => '猜越多得越多，快来抢！',
+    ]);
+   ```
+
+- `mmpaymkttransfers/gethbinfo` [spec](https://pay.weixin.qq.com/wiki/doc/api/cash_coupon.php?chapter=13_7)
+
+    ```php
+    $result = $client->command('mmpaymkttransfers/gethbinfo')->execute([
+        'mch_billno' => '10000098201411111234567890',
+        'bill_type' => 'MCHT',
+    ]);
+    ```
+
 ## Installation
 
 ### Composer
@@ -212,6 +237,23 @@ $client = App::make('ITC\Weixin\Payment\Contracts\Client');
 ## Contributing
 
 Feel free to fork this project and create a pull request!
+
+### How to implement a Command
+
+1. Implement a concrete `ITC\Weixin\Payment\Contracts\Command`. Feel free to
+   extend `ITC\Weixin\Payment\Command\Command`.
+
+2. Register the command inside `Client::instance()`:
+
+    ```
+    public static function instance()
+    {
+        ...
+        
+        $client->register(Command\YourCommand::class);
+        ...
+    }
+    ```
 
 #### How to run tests
 

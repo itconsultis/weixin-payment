@@ -14,6 +14,7 @@ use ITC\Weixin\Payment\Contracts\HashGenerator as HashGeneratorInterface;
 use ITC\Weixin\Payment\Contracts\Client as ClientInterface;
 use ITC\Weixin\Payment\Contracts\Message as MessageInterface;
 use ITC\Weixin\Payment\Client;
+use ITC\Weixin\Payment\Command\Command;
 
 class ClientTest extends TestCase
 {
@@ -67,6 +68,56 @@ class ClientTest extends TestCase
         $this->assertSame($command, $client->command('arbitrary-command-name'));
     }
 
+    public function test_string_command_access()
+    {
+        $client = $this->client;
+
+        $command = Mockery::mock(CommandInterface::class)->makePartial();
+        $command->shouldReceive('name')->once()->andReturn('arbitrary-command-name');
+        $command->shouldReceive('make')->once()->andReturn($command);
+        $command->shouldReceive('setClient')->once()->withArgs([$client]);
+
+        $client->register(get_class($command));
+
+        $this->assertSame($command, $client->command('arbitrary-command-name'));
+    }
+
+    /**
+     * @expectedException OutOfBoundsException
+     */
+    public function test_command_access_exception()
+    {
+        $client = $this->client;
+        $client->command('not-exist');
+    }
+
+    /**
+     * @expectedException OutOfBoundsException
+     */
+    public function test_command_register_invalid_type_exception()
+    {
+        $client = $this->client;
+        $client->register(array());
+    }
+
+    /**
+     * @expectedException OutOfBoundsException
+     */
+    public function test_command_register_invalid_classname_exception()
+    {
+        $client = $this->client;
+        $client->register('not-exist');
+    }
+
+    /**
+     * @expectedException OutOfBoundsException
+     */
+    public function test_command_register_invalid_class_exception()
+    {
+        $client = $this->client;
+        $client->register(\StdClass::class);
+    }
+
     public function test_post_success_case()
     {
         $client = $this->client;
@@ -92,7 +143,10 @@ class ClientTest extends TestCase
         ]);
 
         // pre-request expectations
-        $request_message = $client->message($initial_data);
+        $request_message = $client->message($initial_data, [
+            'app_id' => 'appid',
+            'mch_id' => 'mch_id',
+        ]);
         $hashgen->shouldReceive('hash')->once()->andReturn($signature);
         $serializer->shouldReceive('serialize')->once()->withArgs([$request_data])->andReturn('SERIALIZED_DATA');
 
@@ -162,6 +216,8 @@ class ClientTest extends TestCase
         $commands = [
             'pay/unifiedorder',
             'pay/orderquery',
+            'mmpaymkttransfers/sendredpack',
+            'mmpaymkttransfers/gethbinfo',
         ];
 
         foreach ($commands as $name) {
