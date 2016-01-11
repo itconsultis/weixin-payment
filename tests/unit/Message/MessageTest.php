@@ -66,6 +66,15 @@ class MessageTest extends TestCase
         $this->assertEquals(['bar' => ['two' => 'three']], $message->toArray(true));
     }
 
+    public function test_raw_attribute_Access()
+    {
+        $message = $this->message;
+
+        $value = ['a' => 1, 'b' => 2];
+        $message->set('bar', $value);
+        $this->assertEquals($value, $message->get('bar', true));
+    }
+
     public function test_signing()
     {
         $message = $this->message;
@@ -223,3 +232,5 @@ class MessageTest extends TestCase
         return new HashGenerator($secret);
     }
 }
+
+
