@@ -136,12 +136,12 @@ object that has an `execute` method which returns a `Message`.
 - `pay/orderquery` [spec](https://pay.weixin.qq.com/wiki/doc/api/app.php?chapter=9_2&index=4)
 
     ```php
+    // query a payment by wechat transaction id
     $result = $client->command('pay/orderquery')->execute([
         'transaction_id' => '1008450740201411110005820873'
     ]);
 
-    // or supply out_trade_no
-
+    // or by domain order id ("out_trade_no")
     $result = $client->command('pay/orderquery')->execute([
         'out_trade_no' => 'domain-order-id'
     ]);
@@ -237,6 +237,23 @@ $client = App::make('ITC\Weixin\Payment\Contracts\Client');
 ## Contributing
 
 Feel free to fork this project and create a pull request!
+
+### How to implement a Command
+
+1. Implement a concrete `ITC\Weixin\Payment\Contracts\Command`. Feel free to
+   extend `ITC\Weixin\Payment\Command\Command`.
+
+2. Register the command inside `Client::instance()`:
+
+    ```
+    public static function instance()
+    {
+        ...
+        
+        $client->register(Command\YourCommand::class);
+        ...
+    }
+    ```
 
 #### How to run tests
 
