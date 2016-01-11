@@ -18,7 +18,7 @@ class Message implements MessageInterface
     /**
      * @var array
      */
-    private $orgData = [];
+    private $raw = [];
 
     /**
      * @var ITC\Weixin\Payment\Contracts\HashGenerator
@@ -50,13 +50,14 @@ class Message implements MessageInterface
 
     /**
      * @param string $attr
+     * @param bool $attr
      *
      * @return mixed
      */
-    public function get($attr, $origin = false)
+    public function get($attr, $raw = false)
     {
-        if ($origin) {
-            return isset($this->orgData[$attr]) ? $this->orgData[$attr] : null;
+        if ($raw) {
+            return isset($this->raw[$attr]) ? $this->raw[$attr] : null;
         } else {
             return isset($this->data[$attr]) ? $this->data[$attr] : null;
         }
@@ -68,10 +69,12 @@ class Message implements MessageInterface
      */
     public function set($attr, $value)
     {
-        $this->orgData[$attr] = $value;
+        $this->raw[$attr] = $value;
+
         if (is_array($value)) {
             $value = $this->createPseudoQuery($value);
         }
+
         $this->data[$attr] = $value;
     }
 
@@ -80,7 +83,7 @@ class Message implements MessageInterface
      */
     public function clear($attr)
     {
-        unset($this->orgData[$attr]);
+        unset($this->raw[$attr]);
         unset($this->data[$attr]);
     }
 
@@ -90,7 +93,8 @@ class Message implements MessageInterface
     public function sign()
     {
         unset($this->data['sign']);
-        $this->data['sign'] = $this->getHashGenerator()->hash($this->data);
+        $signature = $this->getHashGenerator()->hash($this->data);
+        $this->data['sign'] = $signature;
     }
 
     /**
@@ -103,8 +107,9 @@ class Message implements MessageInterface
         if ($signature = $this->get('sign')) {
             $data = $this->data;
             unset($data['sign']);
+            $expected = $this->getHashGenerator()->hash($data);
 
-            return $signature === $this->getHashGenerator()->hash($data);
+            return $signature === $expected;
         }
 
         return false;
@@ -115,13 +120,9 @@ class Message implements MessageInterface
      *
      * @return array
      */
-    public function toArray($origin = false)
+    public function toArray($raw = false)
     {
-        if ($origin) {
-            return $this->orgData;
-        } else {
-            return $this->data;
-        }
+        return $raw ? $this->raw : $this->data;
     }
 
     /**
