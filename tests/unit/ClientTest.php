@@ -322,8 +322,6 @@ class ClientTest extends TestCase
             'app_id' => $this->app_id,
             'mch_id' => $this->mch_id,
             'secret' => $this->secret,
-            'public_key_path' => '/path/to/public/key',
-            'private_key_path' => '/path/to/private/key',
         ]);
     }
 }
