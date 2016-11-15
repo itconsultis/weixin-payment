@@ -52,11 +52,28 @@ class Client implements ClientInterface
      */
     public function __construct(array $config = [])
     {
-        $this->app_id = $config['app_id'];
-        $this->mch_id = $config['mch_id'];
-        $this->secret = $config['secret'];
-        $this->public_key_path = $config['public_key_path'];
-        $this->private_key_path = $config['private_key_path'];
+        $this->configure($config);
+    }
+
+    /**
+     * Configure the instance
+     * @param array $config
+     * @return void
+     */
+    public function configure(array $config = [])
+    {
+        $props = [
+            'app_id', 'mch_id', 'secret', 'public_key_path',
+            'private_key_path',
+        ];
+
+        foreach ($props as $prop)
+        {
+            if (isset($config[$prop]))
+            {
+                $this->$prop = $config[$prop];
+            }
+        }
 
         !empty($config['secure']) && $this->secure();
     }
@@ -99,10 +116,17 @@ class Client implements ClientInterface
     public function getHttpClient()
     {
         if (!$this->http) {
-            $this->setHttpClient(new HttpClient([
-                'ssl_key' => $this->public_key_path,
-                'cert' => $this->private_key_path,
-            ]));
+
+            $options = [];
+
+            if ($this->public_key_path) {
+                $options['ssl_key'] = $this->public_key_path;
+            }
+            if ($this->private_key_path) {
+                $options['cert'] = $this->private_key_path;
+            }
+
+            $this->setHttpClient(new HttpClient($options));
         }
 
         return $this->http;
